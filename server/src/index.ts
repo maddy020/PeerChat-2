@@ -8,11 +8,15 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://peer-chat-2-bf4t.vercel.app"],
   },
 });
 
-app.use(cors({ origin: ["http://localhost:5173"] }));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://peer-chat-2-bf4t.vercel.app"],
+  })
+);
 app.use(express.json());
 
 io.on("connection", (socket) => {
