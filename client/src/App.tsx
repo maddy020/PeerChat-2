@@ -3,7 +3,7 @@ import "./App.css";
 import { io } from "socket.io-client";
 
 function App() {
-  const socket = io("http://localhost:3000");
+  const socket = io("https://peerchat-2.onrender.com");
 
   useEffect(() => {
     socket.emit("wave", "Hello");
