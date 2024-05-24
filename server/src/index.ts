@@ -1,6 +1,11 @@
+require("dotenv").config();
 import express from "express";
 import { Server } from "socket.io";
 import { createServer } from "http";
+import "dotenv/config";
+import authRoutes from "./routes/auth";
+import userRoutes from "./routes/user";
+import dbconnection from "./config/db";
 import cors from "cors";
 const app = express();
 
@@ -19,12 +24,42 @@ app.use(
   })
 );
 app.use(express.json());
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
+const onlineUsers = new Map<string, string>();
 
 io.on("connection", (socket) => {
   socket.on("wave", (content: string) => {
     console.log(content);
     console.log("Event is received over server side");
   });
+  socket.on("addUser", (id: string) => {
+    onlineUsers.set(id, socket.id);
+    console.log("User added:", id);
+  });
+
+  socket.on("requestConnection", (toId, fromId) => {
+    const socketid = onlineUsers.get(toId);
+    if (socketid) io.to(socketid).emit("showPopup", fromId);
+  });
+
+  socket.on("reqAnswer", (rid, from, to, isAccepted) => {
+    if (isAccepted === true) {
+      const socketid = onlineUsers.get(to);
+      if (socketid) io.to(socketid).emit("reqAccepted", rid);
+    } else {
+      const socketid = onlineUsers.get(to);
+      if (socketid) io.to(socketid).emit("reqDeclined", null);
+    }
+  });
 });
 
-httpServer.listen(3000, () => console.log("Server is running at 3000"));
+const url =
+  "mongodb+srv://madhavsetia24:ZH7lDaxw65tVejol@cluster0.qws1jx0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+
+console.log(url);
+dbconnection(url)
+  .then(() => {
+    httpServer.listen(3000, () => console.log("Server is running fine"));
+  })
+  .catch((err) => console.log("Error in connection to the database", err));
