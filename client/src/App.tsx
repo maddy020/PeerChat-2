@@ -1,20 +1,38 @@
-import { useEffect } from "react";
 import "./App.css";
-import { io } from "socket.io-client";
+import { Route, Routes, BrowserRouter } from "react-router-dom";
+import Login from "./pages/Login";
+// import Signup from "./pages/Signup";
+// import Chat from "./pages/Chat";
+import { useState } from "react";
 
 function App() {
-  const socket = io("https://peerchat-2.onrender.com");
-
-  useEffect(() => {
-    socket.emit("wave", "Hello");
-  }, []);
+  const [isLoggedIn, setisLoggedIn] = useState(
+    localStorage.getItem("authtoken") ? true : false
+  );
 
   return (
-    <>
-      <div>
-        <h1>Hello</h1>
-      </div>
-    </>
+    <BrowserRouter>
+      <Routes>
+        {/* <Route
+          path="/"
+          element={
+            <Chat isLoggedIn={isLoggedIn} setisLoggedIn={setisLoggedIn} />
+          }
+        /> */}
+        <Route
+          path="/login"
+          element={
+            <Login isLoggedIn={isLoggedIn} setisLoggedIn={setisLoggedIn} />
+          }
+        />
+        {/* <Route
+          path="/signup"
+          element={
+            <Signup isLoggedIn={isLoggedIn} setisLoggedIn={setisLoggedIn} />
+          }
+        /> */}
+      </Routes>
+    </BrowserRouter>
   );
 }
 

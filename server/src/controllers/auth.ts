@@ -17,7 +17,7 @@ async function handleLogin(req: Request, res: Response) {
     if (!validPassword)
       return res.status(401).json({ message: "Invalid Credentials" });
     const id = user._id;
-    const token = jwt.sign({ id }, process.env.JWT_SECRET as string);
+    const token = jwt.sign({ id }, "hellojwt");
     return res
       .status(201)
       .json({ message: "User Logged In", token: token, id: id });
@@ -42,7 +42,7 @@ async function handleSignup(req: Request, res: Response) {
       peerId: name,
     });
     const id = user._id;
-    const token = jwt.sign({ id }, process.env.JWT_SECRET as string);
+    const token = jwt.sign({ id }, "hellojwt");
     return res.status(201).json({ message: "User Created", token: token });
   } catch (error) {
     console.log(error);
