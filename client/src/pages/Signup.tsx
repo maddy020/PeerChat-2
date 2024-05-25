@@ -4,29 +4,25 @@ import SubHeading from "../components/SubHeading";
 import InputBox from "../components/InputBox";
 import Button from "../components/Button";
 import BottomWarning from "../components/BottomWarning";
-import { SetStateAction, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ChangeEvent } from "react";
+import { useState, useEffect } from "react";
+import { ChangeEvent, SetStateAction } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const SigninComponent = ({
+const Signup = ({
   isLoggedIn,
   setisLoggedIn,
 }: {
   isLoggedIn: boolean;
   setisLoggedIn: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState(true);
+
   const navigate = useNavigate();
-  const token = localStorage.getItem("authtoken");
   const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string;
-
-  // useEffect(() => {
-  //   if (isLoggedIn) navigate("/");
-  // });
-
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -38,43 +34,51 @@ const SigninComponent = ({
     }
   };
 
-  const handleSignIn = async (e: ChangeEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (isLoggedIn) navigate("/");
+  });
+
+  const handleSignUp = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validPassword) return;
     try {
-      const user = { username, password };
+      const newUser = { name, username, password };
       const response = await axios.post(
-        `${BACKEND_BASE_URL}/auth/login`,
-        user,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${BACKEND_BASE_URL}/auth/signup`,
+        newUser
       );
+      console.log(response.data);
       localStorage.setItem("authtoken", response.data.token);
-      localStorage.setItem("userID", response.data.id);
       setisLoggedIn(true);
+      setName("");
       setUsername("");
       setPassword("");
       navigate("/");
     } catch (err) {
-      alert(err);
+      console.log("Error in signing up", err);
     }
   };
 
   return (
-    <form onSubmit={handleSignIn} className="h-screen flex justify-center">
+    <form onSubmit={handleSignUp} className="h-screen flex justify-center">
       <div className="flex flex-col justify-center">
         <div className="rounded-lg bg-white text-center p-2 h-max px-4">
-          <Heading label={"Sign in"} />
-          <SubHeading label={"Enter your credentials to access your account"} />
+          <Heading label={"Sign up"} />
+          <SubHeading label={"Enter your infromation to create an account"} />
+          <InputBox
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
+            placeholder="Madhav"
+            label={"Name"}
+            type={"text"}
+            validPassword={true}
+          />
           <InputBox
             onChange={(e) => {
               setUsername(e.target.value);
             }}
-            placeholder="madhavsetia@gmail.com"
+            placeholder="rishavraj@gmail.com"
             label={"Email"}
             type={"email"}
             validPassword={true}
@@ -87,12 +91,12 @@ const SigninComponent = ({
             validPassword={validPassword}
           />
           <div className="pt-4">
-            <Button label={"Sign in"} type={"submit"} />
+            <Button label={"Sign up"} type={"submit"} />
           </div>
           <BottomWarning
-            label={"Don't have an account?"}
-            buttonText={"Sign up"}
-            to={"/signup"}
+            label={"Already have an account?"}
+            buttonText={"Sign in"}
+            to={"/login"}
           />
         </div>
       </div>
@@ -100,4 +104,4 @@ const SigninComponent = ({
   );
 };
 
-export default SigninComponent;
+export default Signup;
