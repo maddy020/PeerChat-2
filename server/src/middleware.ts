@@ -14,7 +14,7 @@ export default async function getUser(
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    const decoded = jwt.verify(token, "hellojwt");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
     req.user = decoded;
     next();
   } catch (error) {
