@@ -54,8 +54,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const url =
-  "mongodb+srv://madhavsetia24:ZH7lDaxw65tVejol@cluster0.qws1jx0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const url = process.env.URI as string;
 
 console.log(url);
 dbconnection(url)
