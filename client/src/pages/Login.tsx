@@ -23,9 +23,9 @@ const SigninComponent = ({
   const token = localStorage.getItem("authtoken");
   const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string;
 
-  // useEffect(() => {
-  //   if (isLoggedIn) navigate("/");
-  // });
+  useEffect(() => {
+    if (isLoggedIn) navigate("/");
+  });
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newPassword = e.target.value;
