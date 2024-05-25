@@ -8,6 +8,7 @@ import RequestModal from "../components/RequestModal";
 import { messageTypes } from "../types/userTypes";
 import Peer, { DataConnection } from "peerjs";
 import socket from "../util/socket";
+import RequestChat from "../components/RequestChat";
 
 const Chat = ({
   isLoggedIn,
@@ -26,30 +27,30 @@ const Chat = ({
   const [messages, setMessages] = useState<Array<messageTypes>>([]);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const currentUserVideoRef = useRef<HTMLVideoElement | null>(null);
-
+  const [isAllowedToChat, setisAllowedToChat] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const call = (remotePeerId: string) => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then((mediaStream) => {
-          if (currentUserVideoRef.current) {
-            currentUserVideoRef.current.srcObject = mediaStream;
-            currentUserVideoRef.current.play();
-          }
+  // const call = (remotePeerId: string) => {
+  //   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  //     navigator.mediaDevices
+  //       .getUserMedia({ video: true, audio: true })
+  //       .then((mediaStream) => {
+  //         if (currentUserVideoRef.current) {
+  //           currentUserVideoRef.current.srcObject = mediaStream;
+  //           currentUserVideoRef.current.play();
+  //         }
 
-          const call = peer.current?.call(remotePeerId, mediaStream);
+  //         const call = peer.current?.call(remotePeerId, mediaStream);
 
-          call?.on("stream", (remoteStream) => {
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remoteStream;
-              remoteVideoRef.current.play();
-            }
-          });
-        });
-    }
-  };
+  //         call?.on("stream", (remoteStream) => {
+  //           if (remoteVideoRef.current) {
+  //             remoteVideoRef.current.srcObject = remoteStream;
+  //             remoteVideoRef.current.play();
+  //           }
+  //         });
+  //       });
+  //   }
+  // };
 
   useEffect(() => {
     const token = localStorage.getItem("authtoken");
@@ -67,13 +68,16 @@ const Chat = ({
       setallUsers(response.data);
     }
     socket.emit("addUser", localStorage.getItem("userID"));
+
     socket.on("showPopup", (fromId: string) => {
-      console.log("fromId", fromId);
       setRequestedId(fromId);
     });
+
     socket.on("reqAccepted", (rid: string) => {
+      console.log("Request Accepted");
       setRemotePeerId(rid);
-      call(rid);
+      setisAllowedToChat(true);
+      setRequestedId(null);
     });
     socket.on("reqDeclined", () => {
       console.log("req declined");
@@ -127,33 +131,33 @@ const Chat = ({
     }
   }, [peer, peerId, remotePeerId]);
 
-  useEffect(() => {
-    peer.current?.on("call", (call) => {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices
-          .getUserMedia({ video: true, audio: true })
-          .then((mediaStream) => {
-            if (currentUserVideoRef.current) {
-              currentUserVideoRef.current.srcObject = mediaStream;
-              currentUserVideoRef.current.play();
-            }
-            call.answer(mediaStream);
-            call.on("stream", function (remoteStream) {
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = remoteStream;
-                remoteVideoRef.current.play();
-              }
-            });
-          })
-          .catch((error) => {
-            console.log("Failed to get media stream", error);
-          });
-      }
-    });
-    return () => {
-      peer.current?.destroy();
-    };
-  }, []);
+  // useEffect(() => {
+  //   peer.current?.on("call", (call) => {
+  //     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  //       navigator.mediaDevices
+  //         .getUserMedia({ video: true, audio: true })
+  //         .then((mediaStream) => {
+  //           if (currentUserVideoRef.current) {
+  //             currentUserVideoRef.current.srcObject = mediaStream;
+  //             currentUserVideoRef.current.play();
+  //           }
+  //           call.answer(mediaStream);
+  //           call.on("stream", function (remoteStream) {
+  //             if (remoteVideoRef.current) {
+  //               remoteVideoRef.current.srcObject = remoteStream;
+  //               remoteVideoRef.current.play();
+  //             }
+  //           });
+  //         })
+  //         .catch((error) => {
+  //           console.log("Failed to get media stream", error);
+  //         });
+  //     }
+  //   });
+  //   return () => {
+  //     peer.current?.destroy();
+  //   };
+  // }, []);
 
   return (
     <div className="h-screen md:flex ">
@@ -163,6 +167,7 @@ const Chat = ({
           to={requestedId}
           setRequestedId={setRequestedId}
           setSelectedUserId={setselectedUserId}
+          setisAllowedToChat={setisAllowedToChat}
         />
       )}
       {selectedUserId === null && (
@@ -190,13 +195,14 @@ const Chat = ({
           selectedUserId === null ? "hidden" : ""
         } md:w-[61%]`}
       >
-        {selectedUserId !== null && (
+        {isAllowedToChat === false && selectedUserId !== null && (
+          <RequestChat selectedUserId={selectedUserId} />
+        )}
+        {isAllowedToChat === true && (
           <ShowChat
             messages={messages}
             setMessages={setMessages}
             connection={connection}
-            selectedUserId={selectedUserId}
-            setSelectedUserId={setselectedUserId}
           />
         )}
       </div>

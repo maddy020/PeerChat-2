@@ -7,11 +7,13 @@ const RequestModal = ({
   to,
   setRequestedId,
   setSelectedUserId,
+  setisAllowedToChat,
 }: {
   peerId: string;
   to: string;
   setRequestedId: React.Dispatch<SetStateAction<string | null>>;
   setSelectedUserId: React.Dispatch<SetStateAction<string | null>>;
+  setisAllowedToChat: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   useEffect(() => {
     Modal.setAppElement("body");
@@ -39,6 +41,7 @@ const RequestModal = ({
                   true
                 );
                 setSelectedUserId(to);
+                setisAllowedToChat(true);
               }}
             >
               Accept

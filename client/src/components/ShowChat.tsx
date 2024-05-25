@@ -1,47 +1,23 @@
-import { ChangeEvent, SetStateAction, useEffect, useState } from "react";
-import axios from "axios";
-import { userTypes, messageTypes } from "../types/userTypes";
+import { ChangeEvent, SetStateAction, useState } from "react";
+import { messageTypes } from "../types/userTypes";
 
 import { DataConnection } from "peerjs";
-import socket from "../util/socket";
+
+import Header from "./Header";
 const ShowChat = ({
   messages,
   setMessages,
   connection,
-  selectedUserId,
-  setSelectedUserId,
 }: {
   messages: Array<messageTypes>;
   setMessages: React.Dispatch<SetStateAction<Array<messageTypes>>>;
   connection: DataConnection | null;
-  selectedUserId: string | null;
-  setSelectedUserId: React.Dispatch<SetStateAction<string | null>>;
 }) => {
-  const [to, setTo] = useState<userTypes | null>(null);
   const [inputMessage, setInputMessage] = useState<string>("");
 
-  useEffect(() => {
-    async function getUser() {
-      const Base_Url = import.meta.env.VITE_BACKEND_BASE_URL;
-      const response = await axios.get(`${Base_Url}/user/${selectedUserId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authtoken")}`,
-        },
-      });
-      setTo(response.data);
-    }
-    getUser();
-  }, [selectedUserId]);
-
-  const handleClick = () => {
-    socket.emit("requestConnection", to?._id, localStorage.getItem("userID"));
-  };
   return (
     <div className="h-full">
-      <button onClick={() => setSelectedUserId(null)}>back</button>
-      <button onClick={handleClick}>RequestChat</button>
-      <button onClick={handleClick}>RequestVideo</button>
-      <button onClick={handleClick}>RequestAudio</button>
+      <Header />
       <div>
         {messages.map((message, index) => (
           <div key={index} className="text-black bg-green-500">
