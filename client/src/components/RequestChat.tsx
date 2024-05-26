@@ -1,11 +1,13 @@
 import socket from "../util/socket";
 
 const RequestChat = ({ selectedUserId }: { selectedUserId: string | null }) => {
+  const popupLabel = "Chat";
   const handleClick = () => {
     socket.emit(
       "requestConnection",
       selectedUserId,
-      localStorage.getItem("userID")
+      localStorage.getItem("userID"),
+      popupLabel
     );
   };
   return (

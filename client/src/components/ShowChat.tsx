@@ -1,23 +1,47 @@
 import { ChangeEvent, SetStateAction, useState } from "react";
 import { messageTypes } from "../types/userTypes";
-
-import { DataConnection } from "peerjs";
+import VideoCall from "./VideoCall";
+import Peer, { DataConnection } from "peerjs";
 
 import Header from "./Header";
 const ShowChat = ({
   messages,
   setMessages,
   connection,
+  selectedUserId,
+  openVideoCall,
+  setOpenVideoCall,
+  currentUserVideoRef,
+  remoteVideoRef,
+  peer,
 }: {
   messages: Array<messageTypes>;
   setMessages: React.Dispatch<SetStateAction<Array<messageTypes>>>;
   connection: DataConnection | null;
+  selectedUserId: string | null;
+  openVideoCall: boolean | null;
+  setOpenVideoCall: React.Dispatch<SetStateAction<boolean>>;
+  currentUserVideoRef: React.RefObject<HTMLVideoElement>;
+  remoteVideoRef: React.RefObject<HTMLVideoElement>;
+  peer: React.RefObject<Peer | null>;
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
 
   return (
     <div className="h-full">
-      <Header />
+      <Header
+        selectedUserId={selectedUserId}
+        setOpenVideoCall={setOpenVideoCall}
+      />
+      {openVideoCall && (
+        <div>
+          <VideoCall
+            currentUserVideoRef={currentUserVideoRef}
+            remoteVideoRef={remoteVideoRef}
+            peer={peer}
+          />
+        </div>
+      )}
       <div>
         {messages.map((message, index) => (
           <div key={index} className="text-black bg-green-500">

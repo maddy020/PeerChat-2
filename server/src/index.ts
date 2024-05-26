@@ -38,9 +38,9 @@ io.on("connection", (socket) => {
     console.log("User added:", id);
   });
 
-  socket.on("requestConnection", (toId, fromId) => {
+  socket.on("requestConnection", (toId, fromId, popupLabel) => {
     const socketid = onlineUsers.get(toId);
-    if (socketid) io.to(socketid).emit("showPopup", fromId);
+    if (socketid) io.to(socketid).emit("showPopup", { fromId, popupLabel });
   });
 
   socket.on("reqAnswer", (rid, from, to, isAccepted) => {

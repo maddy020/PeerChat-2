@@ -8,12 +8,14 @@ const RequestModal = ({
   setRequestedId,
   setSelectedUserId,
   setisAllowedToChat,
+  popupLabel,
 }: {
   peerId: string;
   to: string;
   setRequestedId: React.Dispatch<SetStateAction<string | null>>;
   setSelectedUserId: React.Dispatch<SetStateAction<string | null>>;
   setisAllowedToChat: React.Dispatch<SetStateAction<boolean>>;
+  popupLabel: string;
 }) => {
   useEffect(() => {
     Modal.setAppElement("body");
@@ -28,7 +30,7 @@ const RequestModal = ({
       >
         <div className="flex flex-col justify-evenly items-center p-2">
           <h1 className="font-bold text-xl text-orange-500">
-            User is Requesting to Chat
+            User is Requesting to {popupLabel}
           </h1>
           <div className="flex justify-around">
             <button
@@ -40,6 +42,7 @@ const RequestModal = ({
                   to,
                   true
                 );
+                setRequestedId(null);
                 setSelectedUserId(to);
                 setisAllowedToChat(true);
               }}
