@@ -33,6 +33,7 @@ const Chat = ({
   const navigate = useNavigate();
 
   const call = (remotePeerId: string) => {
+    console.log("call function called");
     navigator.mediaDevices
       .getUserMedia({
         video: true,
@@ -40,12 +41,15 @@ const Chat = ({
       })
       .then((stream) => {
         if (currentUserVideoRef && currentUserVideoRef.current) {
+          console.log("stream", stream);
           currentUserVideoRef.current.srcObject = stream;
           currentUserVideoRef.current.play();
         }
+
         const call = peer.current?.call(remotePeerId, stream);
         if (call) {
           call.on("stream", (userVideoStream) => {
+            console.log("remoteUserVideoStream", userVideoStream);
             if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = userVideoStream;
               remoteVideoRef.current.play();
@@ -80,11 +84,11 @@ const Chat = ({
       }
     );
 
-    socket.on("reqAccepted", (peerId: string) => {
-      if (remotePeerId !== "") {
-        call(remotePeerId);
+    socket.on("reqAccepted", (id: string) => {
+      if (id.length !== 0) {
+        call(id);
       } else {
-        setRemotePeerId(peerId);
+        setRemotePeerId(id);
         setisAllowedToChat(true);
       }
       setRequestedId(null);

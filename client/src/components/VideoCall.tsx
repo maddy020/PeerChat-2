@@ -14,6 +14,7 @@ const VideoCall = ({
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: true })
       .then((stream) => {
+        console.log("stream", stream);
         if (currentUserVideoRef && currentUserVideoRef.current) {
           currentUserVideoRef.current.srcObject = stream;
           currentUserVideoRef.current.play();
@@ -21,6 +22,7 @@ const VideoCall = ({
         peer.current?.on("call", (call) => {
           call.answer(stream);
           call.on("stream", (remoteVideoStream) => {
+            console.log("remotestream", remoteVideoRef);
             if (remoteVideoRef && remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = remoteVideoStream;
               remoteVideoRef.current.play();
@@ -31,8 +33,6 @@ const VideoCall = ({
     return () => {
       if (peer.current) {
         peer.current.off("call");
-        peer.current.disconnect();
-        peer.current.destroy();
       }
     };
   }, [peer, currentUserVideoRef, remoteVideoRef]);
