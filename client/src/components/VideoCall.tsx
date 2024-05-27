@@ -12,35 +12,35 @@ const VideoCall = ({
 }) => {
   useEffect(() => {
     navigator.mediaDevices
-      .getUserMedia({
-        video: true,
-        audio: true,
-      })
+      .getUserMedia({ audio: true, video: true })
       .then((stream) => {
-        if (currentUserVideoRef.current) {
+        if (currentUserVideoRef && currentUserVideoRef.current) {
           currentUserVideoRef.current.srcObject = stream;
           currentUserVideoRef.current.play();
-          peer.current?.on("call", (call) => {
-            call.answer(stream);
-            call.on("stream", (userVideoStream) => {
-              if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = userVideoStream;
-                remoteVideoRef.current.play();
-              }
-            });
-          });
         }
+        peer.current?.on("call", (call) => {
+          call.answer(stream);
+          call.on("stream", (remoteVideoStream) => {
+            if (remoteVideoRef && remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = remoteVideoStream;
+              remoteVideoRef.current.play();
+            }
+          });
+        });
       });
     return () => {
       if (peer.current) {
+        peer.current.off("call");
         peer.current.disconnect();
+        peer.current.destroy();
       }
     };
-  }, [peer, remoteVideoRef, currentUserVideoRef]);
+  }, [peer, currentUserVideoRef, remoteVideoRef]);
+
   return (
     <div>
-      <video className="w-72" playsInline ref={currentUserVideoRef} autoPlay />
-      <video className="w-72" playsInline ref={remoteVideoRef} autoPlay />
+      <video className="w-72" ref={currentUserVideoRef} />
+      <video className="w-72" ref={remoteVideoRef} />
     </div>
   );
 };
