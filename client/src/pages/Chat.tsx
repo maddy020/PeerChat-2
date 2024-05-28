@@ -85,7 +85,8 @@ const Chat = ({
     );
 
     socket.on("reqAccepted", (id: string) => {
-      if (id.length !== 0) {
+      console.log("req accepted", id);
+      if (remotePeerId.length !== 0) {
         call(id);
       } else {
         setRemotePeerId(id);
