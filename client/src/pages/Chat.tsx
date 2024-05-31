@@ -49,21 +49,16 @@ const Chat = ({
       })
       .then((stream) => {
         if (currentUserVideoRef && currentUserVideoRef.current) {
-          console.log("stream", stream);
           currentUserVideoRef.current.srcObject = stream;
-          currentUserVideoRef.current.play();
         }
         console.log(id);
 
         const call = peer.current?.call(id, stream);
         if (call) {
-          console.log("Call", call);
-
           call.on("stream", (userVideoStream) => {
             console.log("remoteUserVideoStream", userVideoStream);
-            if (remoteVideoRef.current) {
+            if (remoteVideoRef && remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = userVideoStream;
-              remoteVideoRef.current.play();
             }
           });
         }

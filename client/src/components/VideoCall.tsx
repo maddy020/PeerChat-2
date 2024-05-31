@@ -11,27 +11,25 @@ const VideoCall = ({
   peer: React.RefObject<Peer | null>;
 }) => {
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: true })
-      .then((stream) => {
-        console.log("stream", stream);
-        if (currentUserVideoRef && currentUserVideoRef.current) {
-          currentUserVideoRef.current.srcObject = stream;
-          currentUserVideoRef.current.play();
-        }
-        peer.current?.on("call", (call) => {
+    peer.current?.on("call", (call) => {
+      navigator.mediaDevices
+        .getUserMedia({ audio: true, video: true })
+        .then((stream) => {
+          console.log("stream", stream);
+          if (currentUserVideoRef && currentUserVideoRef.current) {
+            currentUserVideoRef.current.srcObject = stream;
+          }
           call.answer(stream);
           call.on("stream", (remoteVideoStream) => {
-            console.log("remotestream", remoteVideoRef);
             if (remoteVideoRef && remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = remoteVideoStream;
-              remoteVideoRef.current.play();
             }
           });
         });
-      });
+    });
     return () => {
-      if (peer.current) {
+      if (peer.current?.call) {
+        // peer.current?.call.
         peer.current.off("call");
       }
     };
@@ -39,8 +37,8 @@ const VideoCall = ({
 
   return (
     <div>
-      <video className="w-72" ref={currentUserVideoRef} />
-      <video className="w-72" ref={remoteVideoRef} />
+      <video className="w-72" ref={currentUserVideoRef} autoPlay />
+      <video className="w-72" ref={remoteVideoRef} autoPlay />
     </div>
   );
 };
