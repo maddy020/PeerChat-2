@@ -29,10 +29,6 @@ app.use("/user", userRoutes);
 const onlineUsers = new Map<string, string>();
 
 io.on("connection", (socket) => {
-  socket.on("wave", (content: string) => {
-    console.log(content);
-    console.log("Event is received over server side");
-  });
   socket.on("addUser", (id: string) => {
     onlineUsers.set(id, socket.id);
     console.log("User added:", id);
@@ -45,7 +41,6 @@ io.on("connection", (socket) => {
 
   socket.on("reqAnswer", (rid, from, to, isAccepted, popupLabel) => {
     if (isAccepted === true) {
-      console.log("Inside the accepted answer popupLabel", popupLabel);
       const socketid = onlineUsers.get(to);
       if (socketid) io.to(socketid).emit("reqAccepted", rid, popupLabel);
     } else {

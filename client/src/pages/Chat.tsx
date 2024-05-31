@@ -9,7 +9,7 @@ import { messageTypes } from "../types/userTypes";
 import Peer, { DataConnection } from "peerjs";
 import socket from "../util/socket";
 import RequestChat from "../components/RequestChat";
-import Test from "../components/Test";
+
 const Chat = ({
   isLoggedIn,
   setisLoggedIn,
@@ -32,43 +32,53 @@ const Chat = ({
   const [popupLabel, setpopupLabel] = useState<string>("");
   const navigate = useNavigate();
 
-  // const handleReqAnswer = (id: string) => {
-  //   console.log("remotePeerid", remotePeerId);
-  //   if (remotePeerId === "") {
-  //     if (id) setRemotePeerId(id);
-  //     setisAllowedToChat(true);
-  //   } else {
-  //     call(id);
-  //   }
-  //   setRequestedId(null);
-  // };
-  // const call = (remotePeerId: string) => {
-  //   console.log("call function called");
-  //   console.log("remotePeerId inside the call function", remotePeerId);
-  //   navigator.mediaDevices
-  //     .getUserMedia({
-  //       video: true,
-  //       audio: true,
-  //     })
-  //     .then((stream) => {
-  //       if (currentUserVideoRef && currentUserVideoRef.current) {
-  //         console.log("stream", stream);
-  //         currentUserVideoRef.current.srcObject = stream;
-  //         currentUserVideoRef.current.play();
-  //       }
+  const handleReqAnswer = (id: string, popupLabel: string) => {
+    setRemotePeerId(id);
+    setisAllowedToChat(true);
+    if (popupLabel === "Video") call(id);
+    setRequestedId(null);
+  };
 
-  //       const call = peer.current?.call(remotePeerId, stream);
-  //       if (call) {
-  //         call.on("stream", (userVideoStream) => {
-  //           console.log("remoteUserVideoStream", userVideoStream);
-  //           if (remoteVideoRef.current) {
-  //             remoteVideoRef.current.srcObject = userVideoStream;
-  //             remoteVideoRef.current.play();
-  //           }
-  //         });
-  //       }
-  //     });
-  // };
+  const call = (id: string) => {
+    console.log("call function received");
+
+    navigator.mediaDevices
+      .getUserMedia({
+        video: true,
+        audio: true,
+      })
+      .then((stream) => {
+        if (currentUserVideoRef && currentUserVideoRef.current) {
+          console.log("stream", stream);
+          currentUserVideoRef.current.srcObject = stream;
+          currentUserVideoRef.current.play();
+        }
+        console.log(id);
+
+        const call = peer.current?.call(id, stream);
+        if (call) {
+          console.log("Call", call);
+
+          call.on("stream", (userVideoStream) => {
+            console.log("remoteUserVideoStream", userVideoStream);
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = userVideoStream;
+              remoteVideoRef.current.play();
+            }
+          });
+        }
+      });
+  };
+  useEffect(() => {
+    socket.on("reqAccepted", (id: string, popupLabel: string) => {
+      console.log("popuplabel just inside the socket", popupLabel);
+      handleReqAnswer(id, popupLabel);
+    });
+    return () => {
+      socket.off("reqAccepted");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("authtoken");
@@ -105,16 +115,6 @@ const Chat = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   socket.on("reqAccepted", (id: string) => {
-  //     handleReqAnswer(id);
-  //   });
-  //   return () => {
-  //     socket.off("reqAccepted");
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   useEffect(() => {
     const newPeer = new Peer("", { debug: 2 });
@@ -166,14 +166,6 @@ const Chat = ({
           popupLabel={popupLabel}
         />
       )}
-      <Test
-        peer={peer}
-        remoteVideoRef={remoteVideoRef}
-        currentUserVideoRef={currentUserVideoRef}
-        setRemotePeerId={setRemotePeerId}
-        setisAllowedToChat={setisAllowedToChat}
-        setRequestedId={setRequestedId}
-      />
       {selectedUserId === null && (
         <div className="h-12 w-full absolute bottom-0 md:w-[9%] ">
           <button
