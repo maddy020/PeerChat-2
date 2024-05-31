@@ -40,7 +40,8 @@ const RequestModal = ({
                   peerId,
                   localStorage.getItem("userID"),
                   to,
-                  true
+                  true,
+                  popupLabel
                 );
                 setRequestedId(null);
                 setSelectedUserId(to);

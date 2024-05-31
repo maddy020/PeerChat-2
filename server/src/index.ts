@@ -43,10 +43,11 @@ io.on("connection", (socket) => {
     if (socketid) io.to(socketid).emit("showPopup", { fromId, popupLabel });
   });
 
-  socket.on("reqAnswer", (rid, from, to, isAccepted) => {
+  socket.on("reqAnswer", (rid, from, to, isAccepted, popupLabel) => {
     if (isAccepted === true) {
+      console.log("Inside the accepted answer popupLabel", popupLabel);
       const socketid = onlineUsers.get(to);
-      if (socketid) io.to(socketid).emit("reqAccepted", rid);
+      if (socketid) io.to(socketid).emit("reqAccepted", rid, popupLabel);
     } else {
       const socketid = onlineUsers.get(to);
       if (socketid) io.to(socketid).emit("reqDeclined", null);

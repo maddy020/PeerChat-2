@@ -9,7 +9,7 @@ import { messageTypes } from "../types/userTypes";
 import Peer, { DataConnection } from "peerjs";
 import socket from "../util/socket";
 import RequestChat from "../components/RequestChat";
-
+import Test from "../components/Test";
 const Chat = ({
   isLoggedIn,
   setisLoggedIn,
@@ -17,11 +17,11 @@ const Chat = ({
   isLoggedIn: boolean;
   setisLoggedIn: React.Dispatch<SetStateAction<boolean>>;
 }) => {
+  const [remotePeerId, setRemotePeerId] = useState<string>("");
   const [allUsers, setallUsers] = useState<userTypes[]>([]);
   const [selectedUserId, setselectedUserId] = useState<string | null>(null);
   const peer = useRef<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>("");
-  const [remotePeerId, setRemotePeerId] = useState<string>("");
   const [connection, setConnection] = useState<DataConnection | null>(null);
   const [requestedId, setRequestedId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Array<messageTypes>>([]);
@@ -32,32 +32,43 @@ const Chat = ({
   const [popupLabel, setpopupLabel] = useState<string>("");
   const navigate = useNavigate();
 
-  const call = (remotePeerId: string) => {
-    console.log("call function called");
-    navigator.mediaDevices
-      .getUserMedia({
-        video: true,
-        audio: true,
-      })
-      .then((stream) => {
-        if (currentUserVideoRef && currentUserVideoRef.current) {
-          console.log("stream", stream);
-          currentUserVideoRef.current.srcObject = stream;
-          currentUserVideoRef.current.play();
-        }
+  // const handleReqAnswer = (id: string) => {
+  //   console.log("remotePeerid", remotePeerId);
+  //   if (remotePeerId === "") {
+  //     if (id) setRemotePeerId(id);
+  //     setisAllowedToChat(true);
+  //   } else {
+  //     call(id);
+  //   }
+  //   setRequestedId(null);
+  // };
+  // const call = (remotePeerId: string) => {
+  //   console.log("call function called");
+  //   console.log("remotePeerId inside the call function", remotePeerId);
+  //   navigator.mediaDevices
+  //     .getUserMedia({
+  //       video: true,
+  //       audio: true,
+  //     })
+  //     .then((stream) => {
+  //       if (currentUserVideoRef && currentUserVideoRef.current) {
+  //         console.log("stream", stream);
+  //         currentUserVideoRef.current.srcObject = stream;
+  //         currentUserVideoRef.current.play();
+  //       }
 
-        const call = peer.current?.call(remotePeerId, stream);
-        if (call) {
-          call.on("stream", (userVideoStream) => {
-            console.log("remoteUserVideoStream", userVideoStream);
-            if (remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = userVideoStream;
-              remoteVideoRef.current.play();
-            }
-          });
-        }
-      });
-  };
+  //       const call = peer.current?.call(remotePeerId, stream);
+  //       if (call) {
+  //         call.on("stream", (userVideoStream) => {
+  //           console.log("remoteUserVideoStream", userVideoStream);
+  //           if (remoteVideoRef.current) {
+  //             remoteVideoRef.current.srcObject = userVideoStream;
+  //             remoteVideoRef.current.play();
+  //           }
+  //         });
+  //       }
+  //     });
+  // };
 
   useEffect(() => {
     const token = localStorage.getItem("authtoken");
@@ -83,17 +94,6 @@ const Chat = ({
         setpopupLabel(popupLabel);
       }
     );
-
-    socket.on("reqAccepted", (id: string) => {
-      console.log("req accepted", id);
-      if (remotePeerId.length !== 0) {
-        call(id);
-      } else {
-        setRemotePeerId(id);
-        setisAllowedToChat(true);
-      }
-      setRequestedId(null);
-    });
     socket.on("reqDeclined", () => {
       console.log("req declined");
     });
@@ -101,10 +101,20 @@ const Chat = ({
 
     return () => {
       socket.off("showPopup");
-      socket.off("reqAccepted");
       socket.off("reqDeclined");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // useEffect(() => {
+  //   socket.on("reqAccepted", (id: string) => {
+  //     handleReqAnswer(id);
+  //   });
+  //   return () => {
+  //     socket.off("reqAccepted");
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     const newPeer = new Peer("", { debug: 2 });
@@ -136,7 +146,6 @@ const Chat = ({
       if (conn) setConnection(conn);
       if (conn)
         conn.on("data", (data) => {
-          console.log("Received from another side:", data);
           setMessages((prev) => [
             ...prev,
             { self: false, message: data as string },
@@ -157,6 +166,14 @@ const Chat = ({
           popupLabel={popupLabel}
         />
       )}
+      <Test
+        peer={peer}
+        remoteVideoRef={remoteVideoRef}
+        currentUserVideoRef={currentUserVideoRef}
+        setRemotePeerId={setRemotePeerId}
+        setisAllowedToChat={setisAllowedToChat}
+        setRequestedId={setRequestedId}
+      />
       {selectedUserId === null && (
         <div className="h-12 w-full absolute bottom-0 md:w-[9%] ">
           <button
@@ -199,12 +216,6 @@ const Chat = ({
             setOpenVideoCall={setOpenVideoCall}
           />
         )}
-      </div>
-      <div>
-        <video ref={currentUserVideoRef} />
-      </div>
-      <div>
-        <video ref={remoteVideoRef} />
       </div>
     </div>
   );
