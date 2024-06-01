@@ -11,26 +11,25 @@ const VideoCall = ({
   peer: React.RefObject<Peer | null>;
 }) => {
   useEffect(() => {
-    peer.current?.on("call", (call) => {
-      navigator.mediaDevices
-        .getUserMedia({ audio: true, video: true })
-        .then((stream) => {
-          console.log("stream", stream);
-          if (currentUserVideoRef && currentUserVideoRef.current) {
-            currentUserVideoRef.current.srcObject = stream;
-          }
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: true })
+      .then((stream) => {
+        console.log("stream inside the useEffect call:", stream);
+        if (currentUserVideoRef.current) {
+          currentUserVideoRef.current.srcObject = stream;
+        }
+        peer.current?.on("call", (call) => {
           call.answer(stream);
-          call.on("stream", (remoteVideoStream) => {
-            if (remoteVideoRef && remoteVideoRef.current) {
-              remoteVideoRef.current.srcObject = remoteVideoStream;
+          call.on("stream", (userVideoStream) => {
+            if (remoteVideoRef.current) {
+              remoteVideoRef.current.srcObject = userVideoStream;
             }
           });
         });
-    });
+      });
     return () => {
-      if (peer.current?.call) {
-        // peer.current?.call.
-        peer.current.off("call");
+      if (peer) {
+        peer.current?.disconnect();
       }
     };
   }, [peer, currentUserVideoRef, remoteVideoRef]);

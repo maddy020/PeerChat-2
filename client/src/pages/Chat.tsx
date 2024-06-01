@@ -35,33 +35,31 @@ const Chat = ({
   const handleReqAnswer = (id: string, popupLabel: string) => {
     setRemotePeerId(id);
     setisAllowedToChat(true);
-    if (popupLabel === "Video") call(id);
+    if (popupLabel === "Video") {
+      call(id);
+      call(remotePeerId);
+    }
     setRequestedId(null);
   };
 
   const call = (id: string) => {
-    console.log("call function received");
-
     navigator.mediaDevices
       .getUserMedia({
         video: true,
         audio: true,
       })
       .then((stream) => {
-        if (currentUserVideoRef && currentUserVideoRef.current) {
-          currentUserVideoRef.current.srcObject = stream;
-        }
-        console.log(id);
-
         const call = peer.current?.call(id, stream);
         if (call) {
           call.on("stream", (userVideoStream) => {
-            console.log("remoteUserVideoStream", userVideoStream);
-            if (remoteVideoRef && remoteVideoRef.current) {
+            if (remoteVideoRef.current) {
               remoteVideoRef.current.srcObject = userVideoStream;
             }
           });
         }
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
   useEffect(() => {
