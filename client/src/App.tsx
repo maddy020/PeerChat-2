@@ -23,12 +23,7 @@ function App() {
             <Login isLoggedIn={isLoggedIn} setisLoggedIn={setisLoggedIn} />
           }
         />
-        <Route
-          path="/signup"
-          element={
-            <Signup isLoggedIn={isLoggedIn} setisLoggedIn={setisLoggedIn} />
-          }
-        />
+        <Route path="/signup" element={<Signup isLoggedIn={isLoggedIn} />} />
       </Routes>
     </BrowserRouter>
   );

@@ -4,11 +4,13 @@ import Contacts from "../components/Contacts";
 import { userTypes } from "../types/userTypes";
 import ShowChat from "../components/ShowChat";
 import axios from "axios";
-import RequestModal from "../components/RequestModal";
 import { messageTypes } from "../types/userTypes";
 import Peer, { DataConnection } from "peerjs";
 import socket from "../util/socket";
-import RequestChat from "../components/RequestChat";
+import SideBar from "../components/SideBar";
+import RequestModal from "../components/RequestModal";
+import Connection from "../components/Connection";
+import ConnectionChangePopup from "../components/ConnectionChangePopup";
 
 const Chat = ({
   isLoggedIn,
@@ -19,7 +21,7 @@ const Chat = ({
 }) => {
   const [remotePeerId, setRemotePeerId] = useState<string>("");
   const [allUsers, setallUsers] = useState<userTypes[]>([]);
-  const [selectedUserId, setselectedUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const peer = useRef<Peer | null>(null);
   const [peerId, setPeerId] = useState<string>("");
   const [connection, setConnection] = useState<DataConnection | null>(null);
@@ -30,11 +32,16 @@ const Chat = ({
   const [isAllowedToChat, setisAllowedToChat] = useState<boolean>(false);
   const [openVideoCall, setOpenVideoCall] = useState<boolean>(false);
   const [popupLabel, setpopupLabel] = useState<string>("");
+  const [userData, setUserData] = useState<userTypes[]>([]);
+  const [currUser, setCurrUser] = useState<userTypes | null>(null);
+  const [connlostpopup, setconnlostpopup] = useState<boolean>(false);
+  const [connChangePopup, setConnChangePopup] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const handleReqAnswer = (id: string, popupLabel: string) => {
+  const handleReqAnswer = (id: string, from: string, popupLabel: string) => {
     setRemotePeerId(id);
     setisAllowedToChat(true);
+    localStorage.setItem("remoteUserId", from);
     if (popupLabel === "Video") {
       call(id);
       call(remotePeerId);
@@ -63,9 +70,8 @@ const Chat = ({
       });
   };
   useEffect(() => {
-    socket.on("reqAccepted", (id: string, popupLabel: string) => {
-      console.log("popuplabel just inside the socket", popupLabel);
-      handleReqAnswer(id, popupLabel);
+    socket.on("reqAccepted", (id: string, from: string, popupLabel: string) => {
+      handleReqAnswer(id, from, popupLabel);
     });
     return () => {
       socket.off("reqAccepted");
@@ -87,6 +93,7 @@ const Chat = ({
         },
       });
       setallUsers(response.data);
+      setUserData(response.data);
     }
     socket.emit("addUser", localStorage.getItem("userID"));
 
@@ -100,6 +107,9 @@ const Chat = ({
     socket.on("reqDeclined", () => {
       console.log("req declined");
     });
+    socket.on("browserRefresh", () => {
+      if (localStorage.getItem("remoteUserId")) setconnlostpopup(true);
+    });
     getallUsers();
 
     return () => {
@@ -112,8 +122,9 @@ const Chat = ({
   useEffect(() => {
     const newPeer = new Peer("", { debug: 2 });
     newPeer.on("open", async (id) => {
-      console.log("Peer ID:", id);
       setPeerId(id);
+      if (localStorage.getItem("remoteUserId"))
+        socket.emit("browserRefresh", localStorage.getItem("remoteUserId"));
     });
     peer.current = newPeer;
 
@@ -122,9 +133,17 @@ const Chat = ({
       setConnection(conn);
 
       conn.on("data", (data) => {
+        const value = data as string;
+        const message = value.substring(24);
+        const from = value.substring(0, 24);
         setMessages((prev) => [
           ...prev,
-          { self: false, message: data as string },
+          {
+            self: false,
+            message: message,
+            time: new Date().toLocaleTimeString().substring(0, 5),
+            from: from,
+          },
         ]);
       });
     });
@@ -139,9 +158,17 @@ const Chat = ({
       if (conn) setConnection(conn);
       if (conn)
         conn.on("data", (data) => {
+          const value = data as string;
+          const message = value.substring(24);
+          const from = value.substring(0, 24);
           setMessages((prev) => [
             ...prev,
-            { self: false, message: data as string },
+            {
+              self: false,
+              message: message,
+              time: new Date().toLocaleTimeString().substring(0, 5),
+              from: from,
+            },
           ]);
         });
     }
@@ -149,46 +176,46 @@ const Chat = ({
 
   return (
     <div className="h-screen md:flex ">
-      {requestedId !== null && (
+      {selectedUserId === null && (
+        <div className="bg-primary-600 py-4 px-6 w-full fixed bottom-0 md:w-[9%] ">
+          <SideBar setisLoggedIn={setisLoggedIn} />
+        </div>
+      )}
+
+      <div
+        className={`h-full flex flex-col ${
+          selectedUserId !== null ? "hidden" : ""
+        } p-3 gap-6 md:block md:w-[30%]`}
+      >
+        <Contacts
+          allUsers={allUsers}
+          setSelectedUserId={setSelectedUserId}
+          userData={userData}
+          setUserData={setUserData}
+          setConnChangePopup={setConnChangePopup}
+        />
+      </div>
+      {requestedId !== null && isAllowedToChat === false && (
         <RequestModal
           peerId={peerId}
           to={requestedId}
           setRequestedId={setRequestedId}
-          setSelectedUserId={setselectedUserId}
+          setSelectedUserId={setSelectedUserId}
           setisAllowedToChat={setisAllowedToChat}
           popupLabel={popupLabel}
+          requestedId={requestedId}
         />
       )}
-      {selectedUserId === null && (
-        <div className="h-12 w-full absolute bottom-0 md:w-[9%] ">
-          <button
-            onClick={() => {
-              localStorage.removeItem("authtoken");
-              localStorage.removeItem("userID");
-              setisLoggedIn(false);
-              navigate("/login");
-            }}
-          >
-            Logout
-          </button>
-        </div>
+      {connChangePopup && (
+        <ConnectionChangePopup setConnChangePopup={setConnChangePopup} />
       )}
-      <div
-        className={`h-full ${
-          selectedUserId !== null ? "hidden" : ""
-        } px-4 pt-4 md:w-[30%]`}
-      >
-        <Contacts allUsers={allUsers} setSelectedUserId={setselectedUserId} />
-      </div>
+      {connlostpopup && <Connection setconnlostpopup={setconnlostpopup} />}
       <div
         className={`h-full ${
           selectedUserId === null ? "hidden" : ""
-        } md:w-[61%]`}
+        } md:w-[61%] md:block`}
       >
-        {isAllowedToChat === false && selectedUserId !== null && (
-          <RequestChat selectedUserId={selectedUserId} />
-        )}
-        {isAllowedToChat === true && (
+        {selectedUserId !== null && (
           <ShowChat
             messages={messages}
             setMessages={setMessages}
@@ -199,6 +226,11 @@ const Chat = ({
             remoteVideoRef={remoteVideoRef}
             peer={peer}
             setOpenVideoCall={setOpenVideoCall}
+            isAllowedToChat={isAllowedToChat}
+            requestedId={requestedId}
+            currUser={currUser}
+            setCurrUser={setCurrUser}
+            setConnChangePopup={setConnChangePopup}
           />
         )}
       </div>

@@ -1,38 +1,53 @@
 import { SetStateAction } from "react";
-import searchIcon from "../assets/searchIcon.svg";
+import SearchBar from "./SearchBar";
 import { userTypes } from "../types/userTypes";
 const Contacts = ({
   allUsers,
   setSelectedUserId,
+  userData,
+  setUserData,
+  setConnChangePopup,
 }: {
   allUsers: userTypes[];
   setSelectedUserId: React.Dispatch<SetStateAction<string | null>>;
+  userData: userTypes[];
+  setUserData: React.Dispatch<SetStateAction<userTypes[]>>;
+  setConnChangePopup: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
     <>
-      <div className="relative">
-        <img src={searchIcon} alt="search" className="absolute right-2 top-1" />
-        <input
-          type="text"
-          className="bg-[#817474] text-white rounded-full w-full px-4 py-2 text-lg font-semibold outline-none border-none"
-        />
-      </div>
-      <ul className="pt-6 px-2 flex flex-col gap-6">
-        {allUsers.map((user) => (
-          <li
-            key={user._id}
-            className="flex items-center cursor-pointer"
-            onClick={() => setSelectedUserId(user._id)}
-          >
-            {
-              <div>
-                <h1 className="text-lg font-semibold">{user._id}</h1>
-                <p className="text-sm">{user.username}</p>
-              </div>
-            }
-          </li>
-        ))}
-      </ul>
+      <SearchBar allUsers={allUsers} setUserData={setUserData} />
+      {userData.length === 0 ? (
+        <div>No User Found</div>
+      ) : (
+        <ul className="flex flex-col gap-6 h-[96vh] overflow-auto scroll-smooth">
+          {userData.map((user) => (
+            <li
+              key={user._id}
+              className="flex px-2 items-center cursor-pointer"
+              onClick={() => {
+                if (
+                  localStorage.getItem("remoteUserId") &&
+                  localStorage.getItem("remoteUserId") !== user._id
+                )
+                  setConnChangePopup(true);
+                else setSelectedUserId(user._id);
+              }}
+            >
+              {
+                <div className="flex items-center gap-4">
+                  <img
+                    src="https://satvision.in/wp-content/uploads/2019/06/user.jpg"
+                    alt="avatar"
+                    className="rounded-full h-12 w-12"
+                  />
+                  <h1 className="text-lg font-semibold">{user.name}</h1>
+                </div>
+              }
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 };

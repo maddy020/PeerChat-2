@@ -5,17 +5,11 @@ import InputBox from "../components/InputBox";
 import Button from "../components/Button";
 import BottomWarning from "../components/BottomWarning";
 import { useState, useEffect } from "react";
-import { ChangeEvent, SetStateAction } from "react";
+import { ChangeEvent } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Signup = ({
-  isLoggedIn,
-  setisLoggedIn,
-}: {
-  isLoggedIn: boolean;
-  setisLoggedIn: React.Dispatch<SetStateAction<boolean>>;
-}) => {
+const Signup = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -43,17 +37,11 @@ const Signup = ({
     if (!validPassword) return;
     try {
       const newUser = { name, username, password };
-      const response = await axios.post(
-        `${BACKEND_BASE_URL}/auth/signup`,
-        newUser
-      );
-      console.log(response.data);
-      localStorage.setItem("authtoken", response.data.token);
-      setisLoggedIn(true);
+      await axios.post(`${BACKEND_BASE_URL}/auth/signup`, newUser);
       setName("");
       setUsername("");
       setPassword("");
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       console.log("Error in signing up", err);
     }

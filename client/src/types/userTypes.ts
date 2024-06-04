@@ -9,4 +9,6 @@ export interface userTypes {
 export interface messageTypes {
   self: boolean;
   message: string;
+  time: string;
+  from: string | null;
 }

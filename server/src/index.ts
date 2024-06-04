@@ -31,7 +31,6 @@ const onlineUsers = new Map<string, string>();
 io.on("connection", (socket) => {
   socket.on("addUser", (id: string) => {
     onlineUsers.set(id, socket.id);
-    console.log("User added:", id);
   });
 
   socket.on("requestConnection", (toId, fromId, popupLabel) => {
@@ -39,20 +38,24 @@ io.on("connection", (socket) => {
     if (socketid) io.to(socketid).emit("showPopup", { fromId, popupLabel });
   });
 
+  socket.on("browserRefresh", (to) => {
+    const socketid = onlineUsers.get(to);
+    if (socketid) io.to(socketid).emit("browserRefresh");
+  });
+
   socket.on("reqAnswer", (rid, from, to, isAccepted, popupLabel) => {
     if (isAccepted === true) {
       const socketid = onlineUsers.get(to);
-      if (socketid) io.to(socketid).emit("reqAccepted", rid, popupLabel);
+      if (socketid) io.to(socketid).emit("reqAccepted", rid, from, popupLabel);
     } else {
       const socketid = onlineUsers.get(to);
-      if (socketid) io.to(socketid).emit("reqDeclined", null);
+      if (socketid) io.to(socketid).emit("reqDeclined", null, from, popupLabel);
     }
   });
 });
 
 const url = process.env.URI as string;
 
-console.log(url);
 dbconnection(url)
   .then(() => {
     httpServer.listen(3000, () => console.log("Server is running fine"));
