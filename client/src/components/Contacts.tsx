@@ -29,9 +29,9 @@ const Contacts = ({
                 if (
                   localStorage.getItem("remoteUserId") &&
                   localStorage.getItem("remoteUserId") !== user._id
-                )
+                ) {
                   setConnChangePopup(true);
-                else setSelectedUserId(user._id);
+                } else setSelectedUserId(user._id);
               }}
             >
               {

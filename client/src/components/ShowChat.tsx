@@ -6,6 +6,7 @@ import RequestChat from "./RequestChat";
 import Header from "./Header";
 import MessageInput from "./MessageInput";
 import getUserById from "../backend_calls";
+import fileDownload from "js-file-download";
 const ShowChat = ({
   messages,
   setMessages,
@@ -43,11 +44,6 @@ const ShowChat = ({
     }
     getUser();
   }, [selectedUserId]);
-
-  useEffect(() => {
-    setMessages([]);
-  }, [selectedUserId]);
-
   return (
     <div className="h-full">
       <Header
@@ -79,14 +75,37 @@ const ShowChat = ({
                   message.self === true ? "justify-end" : "justify-start"
                 }  `}
               >
-                {(message.self === true || message.from === selectedUserId) && (
+                {(message.self === true ||
+                  message.from === selectedUserId ||
+                  message.isFile) && (
                   <div className="bg-slate-200 px-2 py-1 rounded-md break-words w-1/2 relative">
-                    <p className="font-semibold break-words w-4/5">
-                      {message.message}
-                    </p>
-                    <sub className="absolute bottom-3 right-2">
-                      {message.time}
-                    </sub>
+                    {message.isFile ? (
+                      <>
+                        <p>{message.fileObject?.fileName}</p>
+                        <button
+                          onClick={() =>
+                            fileDownload(
+                              message.fileObject?.file as Blob,
+                              message.fileObject?.fileName as string
+                            )
+                          }
+                        >
+                          Download
+                        </button>
+                        <sub className="absolute bottom-3 right-2">
+                          {message.time}
+                        </sub>
+                      </>
+                    ) : (
+                      <>
+                        <p className="font-semibold break-words w-4/5">
+                          {message.message}
+                        </p>
+                        <sub className="absolute bottom-3 right-2">
+                          {message.time}
+                        </sub>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

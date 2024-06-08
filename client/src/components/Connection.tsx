@@ -12,7 +12,9 @@ const Connection = ({
         overlayClassName="overlay"
       >
         <div className="flex flex-col justify-evenly items-center p-2 gap-5">
-          <h1 className="font-bold text-lg text-black">Connection Lost ....</h1>
+          <h1 className="font-bold text-lg text-black">
+            Connection Lost .... Try Connecting Again
+          </h1>
           <button
             className="bg-green-700 p-1 text-white font-semibold"
             onClick={() => {
@@ -21,7 +23,7 @@ const Connection = ({
               localStorage.removeItem("remoteUserId");
             }}
           >
-            Accept
+            Retry
           </button>
         </div>
       </Modal>

@@ -1,7 +1,7 @@
 import { SetStateAction, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Contacts from "../components/Contacts";
-import { userTypes } from "../types/userTypes";
+import { PeerDataEnum, userTypes } from "../types/userTypes";
 import ShowChat from "../components/ShowChat";
 import axios from "axios";
 import { messageTypes } from "../types/userTypes";
@@ -11,6 +11,7 @@ import SideBar from "../components/SideBar";
 import RequestModal from "../components/RequestModal";
 import Connection from "../components/Connection";
 import ConnectionChangePopup from "../components/ConnectionChangePopup";
+import { PeerData } from "../types/userTypes";
 
 const Chat = ({
   isLoggedIn,
@@ -123,8 +124,10 @@ const Chat = ({
     const newPeer = new Peer("", { debug: 2 });
     newPeer.on("open", async (id) => {
       setPeerId(id);
-      if (localStorage.getItem("remoteUserId"))
+      if (localStorage.getItem("remoteUserId")) {
         socket.emit("browserRefresh", localStorage.getItem("remoteUserId"));
+        localStorage.removeItem("remoteUserId");
+      }
     });
     peer.current = newPeer;
 
@@ -133,18 +136,42 @@ const Chat = ({
       setConnection(conn);
 
       conn.on("data", (data) => {
-        const value = data as string;
-        const message = value.substring(24);
-        const from = value.substring(0, 24);
-        setMessages((prev) => [
-          ...prev,
-          {
-            self: false,
-            message: message,
-            time: new Date().toLocaleTimeString().substring(0, 5),
-            from: from,
-          },
-        ]);
+        const value = data as PeerData;
+        let currtime = new Date().toLocaleTimeString().substring(0, 5);
+        if (currtime[currtime.length - 1] === ":")
+          currtime = currtime.substring(0, 4);
+        if (value.dataType === PeerDataEnum.file) {
+          if (!value.file || !value.fileName) return;
+          setMessages((prev) => [
+            ...prev,
+            {
+              self: false,
+              message: "",
+              time: currtime,
+              from: "",
+              isFile: true,
+              fileObject: value,
+            },
+          ]);
+        } else {
+          const receivedData = data as PeerData;
+          const value = receivedData.message;
+          if (!value) return;
+          const message = value.substring(24);
+          const from = value.substring(0, 24);
+          if (message !== "")
+            setMessages((prev) => [
+              ...prev,
+              {
+                self: false,
+                message: message,
+                time: currtime,
+                from: from,
+                isFile: false,
+                fileObject: null,
+              },
+            ]);
+        }
       });
     });
 
@@ -158,18 +185,43 @@ const Chat = ({
       if (conn) setConnection(conn);
       if (conn)
         conn.on("data", (data) => {
-          const value = data as string;
-          const message = value.substring(24);
-          const from = value.substring(0, 24);
-          setMessages((prev) => [
-            ...prev,
-            {
-              self: false,
-              message: message,
-              time: new Date().toLocaleTimeString().substring(0, 5),
-              from: from,
-            },
-          ]);
+          const value = data as PeerData;
+          let currtime = new Date().toLocaleTimeString().substring(0, 5);
+          console.log(currtime);
+          if (currtime[currtime.length - 1] === ":")
+            currtime = currtime.substring(0, 4);
+          if (value.dataType === PeerDataEnum.file) {
+            if (!value.file || !value.fileName) return;
+            setMessages((prev) => [
+              ...prev,
+              {
+                self: false,
+                message: "",
+                time: currtime,
+                from: "",
+                isFile: true,
+                fileObject: value,
+              },
+            ]);
+          } else {
+            const receivedData = data as PeerData;
+            const value = receivedData.message;
+            if (!value) return;
+            const message = value.substring(24);
+            const from = value.substring(0, 24);
+            if (message !== "")
+              setMessages((prev) => [
+                ...prev,
+                {
+                  self: false,
+                  message: message,
+                  time: currtime,
+                  from: from,
+                  isFile: false,
+                  fileObject: null,
+                },
+              ]);
+          }
         });
     }
   }, [peer, peerId, remotePeerId]);
