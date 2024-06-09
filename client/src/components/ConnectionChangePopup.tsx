@@ -8,7 +8,7 @@ const ConnectionChangePopup = ({
     <>
       <Modal
         isOpen={true}
-        className="w-4/5  bg-white text-black rounded-lg md:h-1/2 md:w-96"
+        className="w-4/5  bg-white text-black rounded-lg border-none outline-none md:h-32 md:w-96"
         overlayClassName="overlay"
       >
         <div className="flex flex-col justify-evenly items-center p-2 gap-5">
@@ -18,7 +18,7 @@ const ConnectionChangePopup = ({
           </h1>
           <div className="flex gap-6">
             <button
-              className="bg-green-700 p-1 text-white font-semibold"
+              className="bg-green-700 py-2 px-3 rounded-lg  text-white font-semibold"
               onClick={() => {
                 setConnChangePopup(false);
                 window.location.reload();
@@ -27,7 +27,7 @@ const ConnectionChangePopup = ({
               Yes
             </button>
             <button
-              className="bg-red-700 p-1 text-white font-semibold"
+              className="bg-red-700  py-2 px-3 rounded-lg text-white font-semibold"
               onClick={() => {
                 setConnChangePopup(false);
               }}

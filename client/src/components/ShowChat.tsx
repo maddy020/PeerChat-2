@@ -43,9 +43,12 @@ const ShowChat = ({
       setCurrUser(data);
     }
     getUser();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUserId]);
+
   return (
-    <div className="h-full">
+    <div className="h-full relative">
       <Header
         selectedUserId={selectedUserId}
         setOpenVideoCall={setOpenVideoCall}
@@ -67,44 +70,59 @@ const ShowChat = ({
       )}
       {isAllowedToChat === true && (
         <>
-          <div className="py-2 px-1 w-full flex flex-col justify-start gap-3 h-[80vh] overflow-auto">
+          <div className="py-2 px-1 w-full flex flex-col justify-start gap-3 h-[80vh] overflow-auto md:px-3">
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`text-black flex ${
-                  message.self === true ? "justify-end" : "justify-start"
-                }  `}
+                  message.self === true ? "justify-end " : "justify-start"
+                } ${message.isFile ? "items-center" : ""}`}
               >
                 {(message.self === true ||
                   message.from === selectedUserId ||
                   message.isFile) && (
-                  <div className="bg-slate-200 px-2 py-1 rounded-md break-words w-1/2 relative">
+                  <div
+                    className={`bg-slate-200 px-2 py-1 rounded-md break-words flex items-center ${
+                      message.isFile
+                        ? "w-auto max-w-[80%] h-20 "
+                        : "w-auto max-w-[50%] "
+                    } 
+                    }`}
+                  >
                     {message.isFile ? (
-                      <>
-                        <p>{message.fileObject?.fileName}</p>
-                        <button
+                      <div className="flex flex-col justify-between gap-1">
+                        <div
                           onClick={() =>
                             fileDownload(
                               message.fileObject?.file as Blob,
                               message.fileObject?.fileName as string
                             )
                           }
+                          className="flex text-xs md:text-md justify-between  items-center cursor-pointer bg-slate-300 p-1 h-12 rounded-md w-full"
                         >
-                          Download
-                        </button>
-                        <sub className="absolute bottom-3 right-2">
-                          {message.time}
-                        </sub>
-                      </>
+                          <span className="material-symbols-outlined w-1/8">
+                            description
+                          </span>
+                          <span className="w-auto ">
+                            {message.fileObject?.fileName}
+                          </span>
+                          <span className="material-symbols-outlined w-1/8 ">
+                            download_for_offline
+                          </span>
+                        </div>
+                        <div className="flex justify-end">
+                          <p className="text-xs">{message.time}</p>
+                        </div>
+                      </div>
                     ) : (
-                      <>
-                        <p className="font-semibold break-words w-4/5">
+                      <div className="flex flex-col">
+                        <p className="font-semibold break-all">
                           {message.message}
                         </p>
-                        <sub className="absolute bottom-3 right-2">
+                        <p className="flex justify-end text-xs">
                           {message.time}
-                        </sub>
-                      </>
+                        </p>
+                      </div>
                     )}
                   </div>
                 )}

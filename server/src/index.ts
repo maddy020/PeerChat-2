@@ -42,6 +42,11 @@ io.on("connection", (socket) => {
     const socketid = onlineUsers.get(to);
     if (socketid) io.to(socketid).emit("browserRefresh");
   });
+  socket.on("reqCancelled", (to) => {
+    const socketid = onlineUsers.get(to);
+    console.log("socket id and emitting event", to);
+    if (socketid) io.to(socketid).emit("reqCancelled");
+  });
 
   socket.on("reqAnswer", (rid, from, to, isAccepted, popupLabel) => {
     if (isAccepted === true) {

@@ -58,9 +58,26 @@ const MessageInput = ({
               },
             ]);
           }}
-          className="flex bottom-2 absolute w-full items-center rounded-xl p-2 bg-[#333332]"
+          className="flex justify-between bottom-0 absolute w-full items-center bg-slate-300 p-2"
         >
-          <p>{inputFile.name}</p>
+          <div className="flex items-center gap-3 bg-slate-400 overflow-auto break-words break-all px-2 rounded-lg relative h-11 w-auto">
+            <span className="material-symbols-outlined w-1/8">description</span>
+            <p>{inputFile.name}</p>
+            <span
+              className="static right-0 top-0 cursor-pointer "
+              onClick={() => setInputFile(null)}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="20px"
+                viewBox="0 -960 960 960"
+                width="20px"
+                fill="#000000"
+              >
+                <path d="m291-240-51-51 189-189-189-189 51-51 189 189 189-189 51 51-189 189 189 189-51 51-189-189-189 189Z" />
+              </svg>
+            </span>
+          </div>
           <div>
             <button
               className="inline-flex  text-slate-200  hover:text-[#7d7d7b] sm:p-2"
@@ -108,7 +125,7 @@ const MessageInput = ({
               },
             ]);
           }}
-          className="flex bottom-2 absolute w-full items-center rounded-xl p-2 bg-[#333332]"
+          className="flex bottom-0 absolute w-full items-center  p-2 bg-[#333332]"
         >
           <label htmlFor="prompt" className="sr-only">
             Enter your Message

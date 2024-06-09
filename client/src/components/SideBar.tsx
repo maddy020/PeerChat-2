@@ -7,15 +7,15 @@ const SideBar = ({
 }) => {
   const navigate = useNavigate();
   return (
-    <div className="w-full flex justify-between">
-      <div className="flex gap-6 items-center">
-        <span className="material-symbols-outlined hidden text-white ">
+    <div className="w-full flex justify-between md:flex-col md:justify-between md:h-full">
+      <div className="flex gap-6 items-center cursor-pointer md:flex-col">
+        <span className="material-symbols-outlined hidden text-white">
           Menu
         </span>
         <span className="material-symbols-outlined text-white">Message</span>
         <span className="material-symbols-outlined text-white">Call</span>
       </div>
-      <div className="flex gap-6 items-center">
+      <div className="flex gap-6 items-center cursor-pointer md:flex-col">
         <span className="material-symbols-outlined text-white">Star</span>
         <span className="material-symbols-outlined text-white">Archive</span>
         <span

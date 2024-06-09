@@ -1,7 +1,6 @@
 import { SetStateAction } from "react";
 import socket from "../util/socket";
 import { userTypes } from "../types/userTypes";
-
 const Header = ({
   selectedUserId,
   setOpenVideoCall,

@@ -8,7 +8,7 @@ const Connection = ({
     <>
       <Modal
         isOpen={true}
-        className="w-4/5  bg-white text-black rounded-lg md:h-1/2 md:w-96"
+        className="w-4/5  bg-white text-black border-none outline-none rounded-lg md:h-32 md:w-96 "
         overlayClassName="overlay"
       >
         <div className="flex flex-col justify-evenly items-center p-2 gap-5">
@@ -16,7 +16,7 @@ const Connection = ({
             Connection Lost .... Try Connecting Again
           </h1>
           <button
-            className="bg-green-700 p-1 text-white font-semibold"
+            className="bg-green-700 py-2 px-3 rounded-lg text-white font-semibold"
             onClick={() => {
               window.location.reload();
               setconnlostpopup(false);

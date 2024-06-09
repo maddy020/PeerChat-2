@@ -37,6 +37,7 @@ const Chat = ({
   const [currUser, setCurrUser] = useState<userTypes | null>(null);
   const [connlostpopup, setconnlostpopup] = useState<boolean>(false);
   const [connChangePopup, setConnChangePopup] = useState<boolean>(false);
+  const [isUserFetching, setIsUserFetching] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleReqAnswer = (id: string, from: string, popupLabel: string) => {
@@ -87,6 +88,7 @@ const Chat = ({
       return;
     }
     async function getallUsers() {
+      setIsUserFetching(true);
       const Base_Url = import.meta.env.VITE_BACKEND_BASE_URL;
       const response = await axios.get(`${Base_Url}/user/getallUsers`, {
         headers: {
@@ -95,6 +97,7 @@ const Chat = ({
       });
       setallUsers(response.data);
       setUserData(response.data);
+      setIsUserFetching(false);
     }
     socket.emit("addUser", localStorage.getItem("userID"));
 
@@ -105,9 +108,6 @@ const Chat = ({
         setpopupLabel(popupLabel);
       }
     );
-    socket.on("reqDeclined", () => {
-      console.log("req declined");
-    });
     socket.on("browserRefresh", () => {
       if (localStorage.getItem("remoteUserId")) setconnlostpopup(true);
     });
@@ -227,17 +227,17 @@ const Chat = ({
   }, [peer, peerId, remotePeerId]);
 
   return (
-    <div className="h-screen md:flex ">
-      {selectedUserId === null && (
-        <div className="bg-primary-600 py-4 px-6 w-full fixed bottom-0 md:w-[9%] ">
-          <SideBar setisLoggedIn={setisLoggedIn} />
-        </div>
-      )}
+    <div className="h-screen md:flex relative">
+      <div
+        className={`bg-primary-600 py-4 px-6 w-full absolute bottom-0 md:w-[7%] md:left-0 md:h-full md:px-2 lg:w-[5%]`}
+      >
+        <SideBar setisLoggedIn={setisLoggedIn} />
+      </div>
 
       <div
         className={`h-full flex flex-col ${
           selectedUserId !== null ? "hidden" : ""
-        } p-3 gap-6 md:block md:w-[30%]`}
+        } p-3 gap-6 md:block md:w-[30%] md:border-r-2 md:border-primary-600 md:ml-[7%] lg:ml-[5%]`}
       >
         <Contacts
           allUsers={allUsers}
@@ -245,6 +245,7 @@ const Chat = ({
           userData={userData}
           setUserData={setUserData}
           setConnChangePopup={setConnChangePopup}
+          isUserFetching={isUserFetching}
         />
       </div>
       {requestedId !== null && isAllowedToChat === false && (
@@ -256,6 +257,8 @@ const Chat = ({
           setisAllowedToChat={setisAllowedToChat}
           popupLabel={popupLabel}
           requestedId={requestedId}
+          isSender={false}
+          setVisible={() => {}}
         />
       )}
       {connChangePopup && (
@@ -265,9 +268,9 @@ const Chat = ({
       <div
         className={`h-full ${
           selectedUserId === null ? "hidden" : ""
-        } md:w-[61%] md:block`}
+        } md:w-[63%] md:block lg:w-[65%]`}
       >
-        {selectedUserId !== null && (
+        {selectedUserId !== null ? (
           <ShowChat
             messages={messages}
             setMessages={setMessages}
@@ -284,6 +287,10 @@ const Chat = ({
             setCurrUser={setCurrUser}
             setConnChangePopup={setConnChangePopup}
           />
+        ) : (
+          <div className="flex flex-col justify-center items-center h-full">
+            <h1 className="text-2xl">Select a user to chat</h1>
+          </div>
         )}
       </div>
     </div>

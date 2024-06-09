@@ -19,6 +19,7 @@ const SigninComponent = ({
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [validPassword, setValidPassword] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("authtoken");
   const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL as string;
@@ -41,6 +42,7 @@ const SigninComponent = ({
   const handleSignIn = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validPassword) return;
+    setIsLoading(true);
     try {
       const user = { username, password };
       const response = await axios.post(
@@ -56,10 +58,12 @@ const SigninComponent = ({
       localStorage.setItem("authtoken", response.data.token);
       localStorage.setItem("userID", response.data.id);
       setisLoggedIn(true);
+      setIsLoading(false);
       setUsername("");
       setPassword("");
       navigate("/");
     } catch (err) {
+      setIsLoading(false);
       alert(err);
     }
   };
@@ -87,7 +91,7 @@ const SigninComponent = ({
             validPassword={validPassword}
           />
           <div className="pt-4">
-            <Button label={"Sign in"} type={"submit"} />
+            <Button label={"Sign in"} type={"submit"} isLoading={isLoading} />
           </div>
           <BottomWarning
             label={"Don't have an account?"}

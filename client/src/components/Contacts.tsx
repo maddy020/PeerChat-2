@@ -7,20 +7,24 @@ const Contacts = ({
   userData,
   setUserData,
   setConnChangePopup,
+  isUserFetching,
 }: {
   allUsers: userTypes[];
   setSelectedUserId: React.Dispatch<SetStateAction<string | null>>;
   userData: userTypes[];
   setUserData: React.Dispatch<SetStateAction<userTypes[]>>;
   setConnChangePopup: React.Dispatch<SetStateAction<boolean>>;
+  isUserFetching: boolean;
 }) => {
   return (
     <>
       <SearchBar allUsers={allUsers} setUserData={setUserData} />
-      {userData.length === 0 ? (
-        <div>No User Found</div>
+      {isUserFetching && <span className="loader"></span>}
+      {userData.length === 0 && !isUserFetching ? (
+        // <div>No User Found</div>
+        <span className="loader"></span>
       ) : (
-        <ul className="flex flex-col gap-6 h-[96vh] overflow-auto scroll-smooth">
+        <ul className="flex flex-col gap-6 h-[96vh] overflow-auto scroll-smooth md:h-[92vh] md:pt-4">
           {userData.map((user) => (
             <li
               key={user._id}

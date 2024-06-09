@@ -13,6 +13,7 @@ const Signup = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [validPassword, setValidPassword] = useState(true);
 
   const navigate = useNavigate();
@@ -35,14 +36,17 @@ const Signup = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const handleSignUp = async (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validPassword) return;
+    setIsLoading(true);
     try {
       const newUser = { name, username, password };
       await axios.post(`${BACKEND_BASE_URL}/auth/signup`, newUser);
+      setIsLoading(false);
       setName("");
       setUsername("");
       setPassword("");
       navigate("/login");
     } catch (err) {
+      setIsLoading(false);
       console.log("Error in signing up", err);
     }
   };
@@ -79,7 +83,7 @@ const Signup = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             validPassword={validPassword}
           />
           <div className="pt-4">
-            <Button label={"Sign up"} type={"submit"} />
+            <Button label={"Sign up"} type={"submit"} isLoading={isLoading} />
           </div>
           <BottomWarning
             label={"Already have an account?"}
