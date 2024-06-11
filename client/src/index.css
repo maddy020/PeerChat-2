@@ -34,3 +34,8 @@
     transform: rotate(360deg);
   }
 }
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+}

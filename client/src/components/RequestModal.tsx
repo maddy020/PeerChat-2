@@ -14,6 +14,8 @@ const RequestModal = ({
   requestedId,
   isSender,
   setVisible,
+  selectedUserId,
+  setConnChangePopup,
 }: {
   requestedId: string | null;
   peerId: string;
@@ -23,6 +25,8 @@ const RequestModal = ({
   setisAllowedToChat: React.Dispatch<SetStateAction<boolean>>;
   popupLabel: string;
   isSender: boolean;
+  selectedUserId: string | null;
+  setConnChangePopup: React.Dispatch<SetStateAction<boolean>>;
   setVisible: React.Dispatch<SetStateAction<boolean>>;
 }) => {
   const [userRequested, setUserRequested] = useState<userTypes | null>(null);
@@ -111,19 +115,28 @@ const RequestModal = ({
               <button
                 className="bg-green-700 p-1 text-white font-semibold"
                 onClick={() => {
-                  socket.emit(
-                    "reqAnswer",
-                    peerId,
-                    localStorage.getItem("userID"),
-                    to,
-                    true,
-                    popupLabel
-                  );
-                  setRequestedId(null);
-                  setSelectedUserId(to);
-                  setisAllowedToChat(true);
-                  if (userRequested)
-                    localStorage.setItem("remoteUserId", userRequested._id);
+                  {
+                    selectedUserId
+                      ? setConnChangePopup(true)
+                      : (() => {
+                          socket.emit(
+                            "reqAnswer",
+                            peerId,
+                            localStorage.getItem("userID"),
+                            to,
+                            true,
+                            popupLabel
+                          );
+                          setRequestedId(null);
+                          setSelectedUserId(to);
+                          setisAllowedToChat(true);
+                          if (userRequested)
+                            localStorage.setItem(
+                              "remoteUserId",
+                              userRequested._id
+                            );
+                        })();
+                  }
                 }}
               >
                 Accept

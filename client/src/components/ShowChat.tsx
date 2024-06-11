@@ -42,6 +42,7 @@ const ShowChat = ({
       const data = await getUserById(selectedUserId);
       setCurrUser(data);
     }
+    setMessages([]);
     getUser();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,6 +134,7 @@ const ShowChat = ({
             connection={connection}
             messages={messages}
             setMessages={setMessages}
+            selectedUserId={selectedUserId}
           />
         </>
       )}

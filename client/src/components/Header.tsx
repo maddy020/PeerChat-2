@@ -1,4 +1,4 @@
-import { SetStateAction } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import socket from "../util/socket";
 import { userTypes } from "../types/userTypes";
 const Header = ({
@@ -14,16 +14,31 @@ const Header = ({
 }) => {
   const from = localStorage.getItem("userID");
   const to = selectedUserId;
+  const [typing, setTyping] = useState(false);
   const popupLabel = "Video";
   const handleClick = () => {
     socket.emit("requestConnection", to, from, popupLabel);
     setOpenVideoCall(true);
   };
+  useEffect(() => {
+    let val: number;
+    socket.on("showTyping", () => {
+      console.log("in the show typing");
+      setTyping(true);
+      if (val) clearTimeout(val);
+      val = setTimeout(() => {
+        setTyping(false);
+      }, 2000);
+      return () => {
+        clearTimeout(val);
+      };
+    });
+  });
   return (
     <div className="flex justify-between p-2 bg-primary-600">
       <div className="flex items-center gap-3">
         <span
-          className="material-symbols-outlined text-white md:hidden"
+          className="material-symbols-outlined text-white md:hidden cursor-pointer"
           onClick={() => {
             setConnChangePopup(true);
           }}
@@ -37,6 +52,7 @@ const Header = ({
         />
         <span className="text-white text-lg font-semibold">
           {currUser?.name}
+          {typing && " is typing..."}
         </span>
       </div>
       <div className="flex justify-center gap-3 items-center p-2 rounded-lg border-2 border-white">

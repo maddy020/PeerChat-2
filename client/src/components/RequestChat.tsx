@@ -41,6 +41,8 @@ const RequestChat = ({ selectedUserId }: { selectedUserId: string | null }) => {
           requestedId={""}
           isSender={true}
           setVisible={setVisible}
+          setConnChangePopup={() => {}}
+          selectedUserId={selectedUserId as string}
         />
       )}
       <div className="h-[91%] flex justify-center items-center">

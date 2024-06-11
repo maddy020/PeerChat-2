@@ -12,6 +12,7 @@ import RequestModal from "../components/RequestModal";
 import Connection from "../components/Connection";
 import ConnectionChangePopup from "../components/ConnectionChangePopup";
 import { PeerData } from "../types/userTypes";
+import Loader from "../components/Loader";
 
 const Chat = ({
   isLoggedIn,
@@ -38,6 +39,7 @@ const Chat = ({
   const [connlostpopup, setconnlostpopup] = useState<boolean>(false);
   const [connChangePopup, setConnChangePopup] = useState<boolean>(false);
   const [isUserFetching, setIsUserFetching] = useState<boolean>(false);
+  const [gettingPeerId, setGettingPeerId] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const handleReqAnswer = (id: string, from: string, popupLabel: string) => {
@@ -104,6 +106,7 @@ const Chat = ({
     socket.on(
       "showPopup",
       ({ fromId, popupLabel }: { fromId: string; popupLabel: string }) => {
+        console.log("showPopup");
         setRequestedId(fromId);
         setpopupLabel(popupLabel);
       }
@@ -122,8 +125,10 @@ const Chat = ({
 
   useEffect(() => {
     const newPeer = new Peer("", { debug: 2 });
+    setGettingPeerId(true);
     newPeer.on("open", async (id) => {
       setPeerId(id);
+      setGettingPeerId(false);
       if (localStorage.getItem("remoteUserId")) {
         socket.emit("browserRefresh", localStorage.getItem("remoteUserId"));
         localStorage.removeItem("remoteUserId");
@@ -233,9 +238,9 @@ const Chat = ({
       >
         <SideBar setisLoggedIn={setisLoggedIn} />
       </div>
-
+      {(isUserFetching || gettingPeerId) && <Loader />}
       <div
-        className={`h-full flex flex-col ${
+        className={`h-full flex flex-col  ${
           selectedUserId !== null ? "hidden" : ""
         } p-3 gap-6 md:block md:w-[30%] md:border-r-2 md:border-primary-600 md:ml-[7%] lg:ml-[5%]`}
       >
@@ -246,9 +251,10 @@ const Chat = ({
           setUserData={setUserData}
           setConnChangePopup={setConnChangePopup}
           isUserFetching={isUserFetching}
+          selectedUserId={selectedUserId}
         />
       </div>
-      {requestedId !== null && isAllowedToChat === false && (
+      {requestedId !== null && (
         <RequestModal
           peerId={peerId}
           to={requestedId}
@@ -258,11 +264,23 @@ const Chat = ({
           popupLabel={popupLabel}
           requestedId={requestedId}
           isSender={false}
+          selectedUserId={selectedUserId}
+          setConnChangePopup={setConnChangePopup}
           setVisible={() => {}}
         />
       )}
       {connChangePopup && (
-        <ConnectionChangePopup setConnChangePopup={setConnChangePopup} />
+        <ConnectionChangePopup
+          peerId={peerId}
+          to={requestedId}
+          setRequestedId={setRequestedId}
+          setSelectedUserId={setSelectedUserId}
+          setisAllowedToChat={setisAllowedToChat}
+          popupLabel={popupLabel}
+          requestedId={requestedId}
+          isSender={false}
+          setConnChangePopup={setConnChangePopup}
+        />
       )}
       {connlostpopup && <Connection setconnlostpopup={setconnlostpopup} />}
       <div

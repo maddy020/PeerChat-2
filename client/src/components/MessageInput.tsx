@@ -1,15 +1,18 @@
 import { DataConnection } from "peerjs";
 import { useState, ChangeEvent } from "react";
 import { PeerData, PeerDataEnum, messageTypes } from "../types/userTypes";
+import socket from "../util/socket";
 
 const MessageInput = ({
   connection,
   messages,
   setMessages,
+  selectedUserId,
 }: {
   connection: DataConnection | null;
   messages: Array<messageTypes>;
   setMessages: React.Dispatch<React.SetStateAction<Array<messageTypes>>>;
+  selectedUserId: string | null;
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const [inputFile, setInputFile] = useState<File | null>(null);
@@ -167,6 +170,11 @@ const MessageInput = ({
             disabled={inputFile ? true : false}
             onChange={(e) => {
               setInputMessage(e.target.value);
+              socket.emit(
+                "typing",
+                selectedUserId,
+                localStorage.getItem("userID")
+              );
             }}
           />
           <div>

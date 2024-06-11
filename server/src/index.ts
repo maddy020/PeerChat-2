@@ -27,10 +27,12 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 const onlineUsers = new Map<string, string>();
-
+const onlineUsersArr: Array<string> = [];
 io.on("connection", (socket) => {
   socket.on("addUser", (id: string) => {
     onlineUsers.set(id, socket.id);
+    onlineUsersArr.push(id);
+    io.emit("onlineUsers", onlineUsersArr);
   });
 
   socket.on("requestConnection", (toId, fromId, popupLabel) => {
@@ -38,13 +40,17 @@ io.on("connection", (socket) => {
     if (socketid) io.to(socketid).emit("showPopup", { fromId, popupLabel });
   });
 
+  socket.on("typing", (to, from) => {
+    console.log("Getting typing event");
+    const socketid = onlineUsers.get(to);
+    if (socketid) io.to(socketid).emit("showTyping");
+  });
   socket.on("browserRefresh", (to) => {
     const socketid = onlineUsers.get(to);
     if (socketid) io.to(socketid).emit("browserRefresh");
   });
   socket.on("reqCancelled", (to) => {
     const socketid = onlineUsers.get(to);
-    console.log("socket id and emitting event", to);
     if (socketid) io.to(socketid).emit("reqCancelled");
   });
 
