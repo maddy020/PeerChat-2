@@ -32,7 +32,7 @@ const Contacts = ({
       {userData.length === 0 && !isUserFetching ? (
         <div>No User Found</div>
       ) : (
-        <ul className="flex flex-col gap-6 h-[96vh] overflow-auto scroll-smooth scrollbar-thin px-3 md:h-[92vh] md:pt-4">
+        <ul className="flex flex-col gap-6 h-[80vh] overflow-auto scroll-smooth scrollbar-thin px-3 md:h-[92vh] md:pt-4">
           {userData.map((user) => (
             <li
               key={user._id}

@@ -1,5 +1,5 @@
 import { SetStateAction, useRef } from "react";
-import searchIcon from "../assets/searchIcon.svg";
+import searchIcon from "../../public/assets/searchIcon.svg";
 import { userTypes } from "../types/userTypes";
 
 const SearchBar = ({

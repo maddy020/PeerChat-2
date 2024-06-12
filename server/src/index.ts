@@ -10,6 +10,8 @@ import cors from "cors";
 const app = express();
 
 const httpServer = createServer(app);
+const onlineUsers = new Map<string, string>();
+let onlineUsersArr: Array<string> = [];
 
 const io = new Server(httpServer, {
   cors: {
@@ -26,22 +28,23 @@ app.use(
 app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
-const onlineUsers = new Map<string, string>();
-const onlineUsersArr: Array<string> = [];
+
 io.on("connection", (socket) => {
   socket.on("addUser", (id: string) => {
     onlineUsers.set(id, socket.id);
-    onlineUsersArr.push(id);
+    if (onlineUsersArr.includes(id) === false) onlineUsersArr.push(id);
     io.emit("onlineUsers", onlineUsersArr);
   });
-
+  socket.on("logout", (id: string) => {
+    onlineUsersArr.splice(onlineUsersArr.indexOf(id), 1);
+    io.emit("onlineUsers", onlineUsersArr);
+  });
   socket.on("requestConnection", (toId, fromId, popupLabel) => {
     const socketid = onlineUsers.get(toId);
     if (socketid) io.to(socketid).emit("showPopup", { fromId, popupLabel });
   });
 
   socket.on("typing", (to, from) => {
-    console.log("Getting typing event");
     const socketid = onlineUsers.get(to);
     if (socketid) io.to(socketid).emit("showTyping");
   });

@@ -1,5 +1,6 @@
 import { SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
+import socket from "../util/socket";
 const SideBar = ({
   setisLoggedIn,
 }: {
@@ -19,7 +20,10 @@ const SideBar = ({
         <span className="material-symbols-outlined text-white">Star</span>
         <span className="material-symbols-outlined text-white">Archive</span>
         <span
-          onClick={() => {
+          onClick={async () => {
+            console.log("logout");
+            socket.emit("browserRefresh", localStorage.getItem("remoteUserId"));
+            socket.emit("logout", localStorage.getItem("userID"));
             localStorage.removeItem("authtoken");
             localStorage.removeItem("userID");
             localStorage.removeItem("remoteUserId");

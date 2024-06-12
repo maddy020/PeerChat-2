@@ -28,7 +28,7 @@ const Header = ({
       if (val) clearTimeout(val);
       val = setTimeout(() => {
         setTyping(false);
-      }, 2000);
+      }, 1000);
       return () => {
         clearTimeout(val);
       };

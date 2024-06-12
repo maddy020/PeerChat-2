@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app/client
+      - ./client/public/assets:/app/public/assets
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      - URI=mongodb+srv://madhavsetia24:b1FcDWzbTYvtoaui@cluster0.qws1jx0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=hellojwt
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app/server
