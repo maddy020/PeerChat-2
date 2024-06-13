@@ -49,7 +49,7 @@ const ShowChat = ({
   }, [selectedUserId]);
 
   return (
-    <div className="h-full relative">
+    <div className="h-full md:h-[98vh] relative bg-[#252331] md:mt-2">
       <Header
         selectedUserId={selectedUserId}
         setOpenVideoCall={setOpenVideoCall}
@@ -75,15 +75,19 @@ const ShowChat = ({
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`text-black flex ${
-                  message.self === true ? "justify-end " : "justify-start"
+                className={`text-white flex ${
+                  message.self === true ? "justify-end" : "justify-start "
                 } ${message.isFile ? "items-center" : ""}`}
               >
                 {(message.self === true ||
                   message.from === selectedUserId ||
                   message.isFile) && (
                   <div
-                    className={`bg-slate-200 px-2 py-1 rounded-md break-words flex items-center ${
+                    className={`${
+                      message.self === true
+                        ? "bg-primary-600 rounded-se-lg rounded-es-lg rounded-ee-lg"
+                        : "bg-[#343145] rounded-se-lg rounded-es-lg rounded-ss-lg"
+                    } text-white px-2 py-1  break-words flex items-center ${
                       message.isFile
                         ? "w-auto max-w-[80%] h-20 "
                         : "w-auto max-w-[50%] "
@@ -99,7 +103,7 @@ const ShowChat = ({
                               message.fileObject?.fileName as string
                             )
                           }
-                          className="flex text-xs md:text-md justify-between  items-center cursor-pointer bg-slate-300 p-1 h-12 rounded-md w-full"
+                          className="flex text-xs md:text-md justify-between  items-center cursor-pointer border-2 border-slate-200 p-1 h-12 rounded-md w-full"
                         >
                           <span className="material-symbols-outlined w-1/8">
                             description

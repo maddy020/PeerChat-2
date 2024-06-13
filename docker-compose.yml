@@ -18,8 +18,8 @@ services:
       context: ./server
       dockerfile: Dockerfile
     environment:
-      - URI=your_url
-      - JWT_SECRET=your_jwt
+      - URI=mongodb+srv://madhavsetia24:b1FcDWzbTYvtoaui@cluster0.qws1jx0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET=hellojwt
     ports:
       - "3000:3000"
     volumes:

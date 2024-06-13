@@ -232,9 +232,9 @@ const Chat = ({
   }, [peer, peerId, remotePeerId]);
 
   return (
-    <div className="h-screen md:flex relative">
+    <div className="h-screen md:flex relative ">
       <div
-        className={`bg-primary-600 py-4 px-6 w-full absolute bottom-0 md:w-[7%] md:left-0 md:h-full md:px-2 lg:w-[5%]`}
+        className={`bg-[#252331] py-4 px-6 w-full absolute bottom-0 md:w-[7%] md:left-0 md:h-full md:px-2 lg:w-[5%]`}
       >
         <SideBar setisLoggedIn={setisLoggedIn} />
       </div>
@@ -242,7 +242,7 @@ const Chat = ({
       <div
         className={`h-full flex flex-col  ${
           selectedUserId !== null ? "hidden" : ""
-        } p-3 gap-6 md:block md:w-[30%] md:border-r-2 md:border-primary-600 md:ml-[7%] lg:ml-[5%]`}
+        } p-3 gap-6 md:block md:w-[29%]  md:ml-[7%] lg:ml-[5%]`}
       >
         <Contacts
           allUsers={allUsers}

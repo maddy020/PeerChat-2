@@ -61,9 +61,9 @@ const MessageInput = ({
               },
             ]);
           }}
-          className="flex justify-between bottom-0 absolute w-full items-center bg-slate-300 p-2"
+          className="flex justify-between bottom-0 absolute w-full items-center p-2"
         >
-          <div className="flex items-center gap-3 bg-slate-400 overflow-auto break-words break-all px-2 rounded-lg relative h-11 w-auto">
+          <div className="flex items-center gap-3  overflow-auto break-words break-all px-2 rounded-lg relative h-11 w-auto">
             <span className="material-symbols-outlined w-1/8">description</span>
             <p>{inputFile.name}</p>
             <span
@@ -128,7 +128,7 @@ const MessageInput = ({
               },
             ]);
           }}
-          className="flex bottom-0 absolute w-full items-center  p-2 bg-[#333332]"
+          className="flex bottom-0 absolute w-full items-center  p-2"
         >
           <label htmlFor="prompt" className="sr-only">
             Enter your Message

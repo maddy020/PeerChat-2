@@ -35,7 +35,7 @@ const Header = ({
     });
   });
   return (
-    <div className="flex justify-between p-2 bg-primary-600">
+    <div className="flex justify-between p-3  bg-[#252331] rounded-lg shadow-sm shadow-slate-50">
       <div className="flex items-center gap-3">
         <span
           className="material-symbols-outlined text-white md:hidden cursor-pointer"
