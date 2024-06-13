@@ -82,7 +82,7 @@ const RequestModal = ({
     <>
       <Modal
         isOpen={true}
-        className="w-4/5  bg-white text-black rounded-lg outline-none border-none md:h-36 md:w-96"
+        className="w-4/5 bg-white text-black rounded-lg outline-none border-none md:h-36 md:w-96"
         overlayClassName="overlay"
       >
         {isSender ? (

@@ -27,7 +27,7 @@ const SearchBar = ({
     }
   };
   return (
-    <div className="relative ">
+    <div className="relative">
       <button className="absolute right-2 top-1">
         <svg
           width="32"
@@ -84,7 +84,7 @@ const SearchBar = ({
       <input
         type="text"
         placeholder="Search"
-        className="rounded-lg w-full px-4 py-2 text-lg font-semibold outline-none border-none"
+        className="rounded-lg w-full px-4 py-2 text-lg font-semibold text-white outline-none border-none bg-[#252331] shadow-sm shadow-slate-300"
         ref={inputRef}
         onChange={handleChange}
       />

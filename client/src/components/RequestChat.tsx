@@ -48,7 +48,7 @@ const RequestChat = ({ selectedUserId }: { selectedUserId: string | null }) => {
       <div className="h-[91%] flex justify-center items-center">
         <button
           onClick={handleClick}
-          className="bg-slate-500 p-4 rounded-md text-white cursor-pointer"
+          className="bg-gradient-to-r from-custom-blue-light  to-custom-blue-dark p-4 rounded-md text-white cursor-pointer"
         >
           Request Chat
         </button>

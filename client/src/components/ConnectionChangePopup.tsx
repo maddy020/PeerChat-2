@@ -38,7 +38,7 @@ const ConnectionChangePopup = ({
     <>
       <Modal
         isOpen={true}
-        className="w-4/5  bg-white text-black rounded-lg border-none outline-none md:h-32 md:w-96"
+        className="w-4/5  bg-[#252331] text-black rounded-lg border-none outline-none md:h-32 md:w-96"
         overlayClassName="overlay"
       >
         <div className="flex flex-col justify-evenly items-center p-2 gap-5">

@@ -2,6 +2,7 @@ import { DataConnection } from "peerjs";
 import { useState, ChangeEvent } from "react";
 import { PeerData, PeerDataEnum, messageTypes } from "../types/userTypes";
 import socket from "../util/socket";
+import UploadFileInput from "./UploadFile";
 
 const MessageInput = ({
   connection,
@@ -17,11 +18,6 @@ const MessageInput = ({
   const [inputMessage, setInputMessage] = useState<string>("");
   const [inputFile, setInputFile] = useState<File | null>(null);
   const from = localStorage.getItem("userID");
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] as unknown as File;
-    setInputFile(file);
-  };
 
   return (
     <>
@@ -61,9 +57,9 @@ const MessageInput = ({
               },
             ]);
           }}
-          className="flex justify-between bottom-0 absolute w-full items-center p-2"
+          className="flex border-slate-500 border-t-2 justify-between bottom-0 absolute w-full items-center p-2"
         >
-          <div className="flex items-center gap-3  overflow-auto break-words break-all px-2 rounded-lg relative h-11 w-auto">
+          <div className="flex items-center gap-3 bg-white overflow-auto break-words break-all px-2 rounded-lg relative h-11 w-auto ">
             <span className="material-symbols-outlined w-1/8">description</span>
             <p>{inputFile.name}</p>
             <span
@@ -83,7 +79,7 @@ const MessageInput = ({
           </div>
           <div>
             <button
-              className="inline-flex  text-slate-200  hover:text-[#7d7d7b] sm:p-2"
+              className="inline-flex text-slate-200 hover:text-[#7d7d7b] sm:p-2"
               type="submit"
             >
               <svg
@@ -92,8 +88,8 @@ const MessageInput = ({
                 aria-hidden="true"
                 viewBox="0 0 24 24"
                 strokeWidth="2"
-                stroke="#C62744"
-                fill="none"
+                stroke="#184ffc"
+                fill="#184ffc"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -128,44 +124,19 @@ const MessageInput = ({
               },
             ]);
           }}
-          className="flex bottom-0 absolute w-full items-center  p-2"
+          className="flex bottom-0 absolute w-full items-center p-2 border-t-[1px] border-slate-100"
         >
           <label htmlFor="prompt" className="sr-only">
             Enter your Message
           </label>
           <div>
-            <button
-              className="  text-slate-200  hover:text-[#7d7d7b] sm:p-2"
-              type="button"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M12 5l0 14"></path>
-                <path d="M5 12l14 0"></path>
-              </svg>
-              <span className="sr-only">Attach file</span>
-            </button>
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="text-white"
-            />
+            <UploadFileInput setInputFile={setInputFile} />
           </div>
           <input
             id="prompt"
             required={true}
             value={inputMessage}
-            className="mx-2  flex min-h-full resize-none w-full rounded-xl border border-slate-300  p-2 text-base text-slate focus:outline-none focus:ring-1   border-slate-300/20  bg-[#333332]  text-slate-200  placeholder-slate-400  focus:border-[#7d7d7b]  focus:ring-[#20201f]"
+            className="mx-2  flex min-h-full resize-none w-full outline-none border-none px-2 py-4 bg-[#252331] text-slate-300 font-semibold"
             placeholder="Enter your message"
             disabled={inputFile ? true : false}
             onChange={(e) => {
@@ -188,8 +159,8 @@ const MessageInput = ({
                 aria-hidden="true"
                 viewBox="0 0 24 24"
                 strokeWidth="2"
-                stroke="#C62744"
-                fill="none"
+                stroke="#184ffc"
+                fill="#184ffc"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >

@@ -39,9 +39,9 @@ const Contacts = ({
           {userData.map((user) => (
             <li
               key={user._id}
-              className={`flex px-2 items-center cursor-pointer py-4 rounded-lg shadow-slate-300 shadow-inner ${
+              className={`flex px-2 items-center cursor-pointer py-4 rounded-lg shadow-slate-300 shadow-sm ${
                 user._id === selectedUserId
-                  ? "bg-primary-600 text-white"
+                  ? "bg-gradient-to-r from-custom-blue-light from-10% to-custom-blue-dark text-white"
                   : "bg-[#252331]"
               }`}
               onClick={() => {

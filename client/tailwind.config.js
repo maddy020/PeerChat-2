@@ -17,6 +17,8 @@ export default {
           900: "#1e3a8a",
           950: "#172554",
         },
+        "custom-blue-light": "#3384fe",
+        "custom-blue-dark": "#1c57fc",
       },
     },
   },

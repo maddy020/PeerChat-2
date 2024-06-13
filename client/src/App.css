@@ -2,3 +2,8 @@ body {
   height: 100vh;
   background-color: #211f2c;
 }
+
+.avatar-uploader .ant-upload {
+  width: 46px !important;
+  height: 44px !important;
+}

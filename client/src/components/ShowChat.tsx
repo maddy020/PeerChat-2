@@ -85,7 +85,7 @@ const ShowChat = ({
                   <div
                     className={`${
                       message.self === true
-                        ? "bg-primary-600 rounded-se-lg rounded-es-lg rounded-ee-lg"
+                        ? "bg-gradient-to-r from-custom-blue-light  to-custom-blue-dark rounded-se-lg rounded-es-lg rounded-ee-lg"
                         : "bg-[#343145] rounded-se-lg rounded-es-lg rounded-ss-lg"
                     } text-white px-2 py-1  break-words flex items-center ${
                       message.isFile
