@@ -78,7 +78,7 @@ const SigninComponent = ({
             onChange={(e) => {
               setUsername(e.target.value);
             }}
-            placeholder="madhavsetia@gmail.com"
+            placeholder="madhav@gmail.com"
             label={"Email"}
             type={"email"}
             validPassword={true}
