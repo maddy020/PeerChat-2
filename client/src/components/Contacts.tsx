@@ -22,7 +22,6 @@ const Contacts = ({
   const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   useEffect(() => {
     socket.on("onlineUsers", (onlineUsersArr: string[]) => {
-      console.log(onlineUsersArr);
       setOnlineUsers(onlineUsersArr);
     });
   });

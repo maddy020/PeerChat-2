@@ -117,7 +117,9 @@ const RequestModal = ({
                 onClick={() => {
                   {
                     selectedUserId
-                      ? setConnChangePopup(true)
+                      ? popupLabel === "Chat"
+                        ? setConnChangePopup(true)
+                        : setRequestedId(null)
                       : (() => {
                           socket.emit(
                             "reqAnswer",

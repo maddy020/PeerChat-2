@@ -17,13 +17,14 @@ const Header = ({
   const [typing, setTyping] = useState(false);
   const popupLabel = "Video";
   const handleClick = () => {
+    alert("Feature is under progress");
+    window.location.reload();
     socket.emit("requestConnection", to, from, popupLabel);
     setOpenVideoCall(true);
   };
   useEffect(() => {
     let val: number;
     socket.on("showTyping", () => {
-      console.log("in the show typing");
       setTyping(true);
       if (val) clearTimeout(val);
       val = setTimeout(() => {

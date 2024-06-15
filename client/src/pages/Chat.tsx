@@ -48,7 +48,6 @@ const Chat = ({
     localStorage.setItem("remoteUserId", from);
     if (popupLabel === "Video") {
       call(id);
-      call(remotePeerId);
     }
     setRequestedId(null);
   };
